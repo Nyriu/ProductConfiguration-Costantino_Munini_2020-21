@@ -32,6 +32,31 @@ uniforms = uniforms_default;
 //  var loader = new THREE.TextureLoader();
 //  loader.load("https://codefisher.org/static/images/pastel-svg/256/bullet-star.png", loadDone);
 //});
+
+var diffuseMap;
+var specularMap;
+var roughnessMap;
+
+var loaderPromise = new Promise((resolve, reject) => {
+  diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
+  specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
+  roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
+  console.log("textures: " + diffuseMap + " " + specularMap + " " + roughnessMap)
+  resolve(true);
+})
+.then(() => {
+  console.log("then")
+  uniforms_texture = {
+   specularMap: { type: "t", value: specularMap },
+   diffuseMap:	{ type: "t", value: diffuseMap },
+   roughnessMap:	{ type: "t", value: roughnessMap },
+   pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+   clight:	{ type: "v3", value: new THREE.Vector3() },
+   textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
+  };
+});
+
+
 //
 //var diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
 //var specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
