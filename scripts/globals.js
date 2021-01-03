@@ -1,6 +1,7 @@
 // ENUMs
 const modelNames = {
   TORUS : "TorusKnot",
+  SPHERE : "Sphere",
   HELMET : "VikingHelmet",
 }
 
@@ -31,25 +32,23 @@ const matParams_redPlastic = {
 
 
 // GLOBAL VARs
-var geometry;
-var material;
-var mesh;
+//var geometry;
+//var material;
+//var mesh;
 
 var materialParameters = matParams_redPlastic
 
 
-var uniforms = {
-  cspec:	{ type: "v3", value: new THREE.Vector3() },
-  cdiff:	{ type: "v3", value: new THREE.Vector3() },
-  roughness: {type: "f", value: 0.5},
-  pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-  clight:	{ type: "v3", value: new THREE.Vector3() },
-};
+var uniforms_default;
+var uniforms_texture;
+//var uniforms = uniforms_default; // TODO remove
 
-var vs;
-var fs;
 
-var ourMaterial;
+//var vs;
+//var fs;
+
+var defaultMaterial;
+var textureMaterial;
 
 
 
@@ -58,5 +57,6 @@ var DEBUG_tmp;
 var DEBUG_child;
 var DEBUG_mesh;
 var DEBUG_knot;
+var DEBUG_sphere;
 
 

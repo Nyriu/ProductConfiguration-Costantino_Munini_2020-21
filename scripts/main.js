@@ -1,117 +1,79 @@
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.outputEncoding = THREE.sRGBEncoding;
+
 var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
 var scene    = new THREE.Scene();
 
-
-vs = document.getElementById("vertex").textContent;
-fs = document.getElementById("fragment").textContent;
-
-ourMaterial = new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: vs, fragmentShader: fs });
-
-
-//// default: white, 1.0 intensity
-//var lightParameters = {
-//  red: 1.0,
-//  green: 1.0,
-//  blue: 1.0,
-//  intensity: 1.0,
-//}
-
-//// default: red plastic
-//var materialParameters = {
-//  cdiff_red: 0.7,
-//  cdiff_green: 0.0,
-//  cdiff_blue: 0.0,
-//  cspec_red: 0.04,
-//  cspec_green: 0.04,
-//  cspec_blue: 0.04,
-//  roughness: 0.3
-//}
-
-
-//geometry = new THREE.TorusKnotGeometry( 2, 0.5, 200, 32 );
-
-////var loader = new THREE.GLTFLoader();
-//var loader = new THREE.OBJLoader();
-//loader.useIndices = true;
-//	//loader.load( "./models/scene.gltf", function ( model ) {
-//	loader.load( "./models/model.obj", function ( model ) {
-//		console.log(model);
-
-//		//console.log(model.scene.children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]);
-
-//    //geometry = model.scene.children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[2].geometry;
-
-//    geometry = model.children[0].geometry;
-
-//		//geometry = obj.children[0].geometry;
-//		geometry.center();
-
-//    //ourMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-
-//		mesh = new THREE.Mesh( geometry, ourMaterial );
-
-
-//		mesh.scale.multiplyScalar( 0.1 );
-//		THREE.BufferGeometryUtils.computeTangents(geometry);
-//		scene.add( mesh );
-//	} );
-
-
-//const loader = new THREE.OBJLoader();
-//loader.load(
-//  // resource URL
-//  "./models/model.obj",
-//  // called when resource is loaded
-//  function ( object ) {
-//    //console.log(object);
-//    //console.log(object.children[0]);
-//
-//    //scene.add( object.children[0] );
-//    //scene.add( object.children[1] );
-//    //scene.add( object.children[2] );
-//    //scene.add( object.children[3] );
-//    //scene.add( object.children[4] );
-//    //scene.add( object.children[5] );
-//    //scene.add( object.children[6] );
-//    scene.add( object.children[7] );
-//    //scene.add( object.children[8] );
-//
-//  },
-//  // called when loading is in progresses
-//  function ( xhr ) {
-//
-//    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-//
-//  },
-//  // called when loading has errors
-//  function ( error ) {
-//
-//    console.log( 'An error happened' );
-//
-//  }
-//);
-
-//var mesh = new THREE.Mesh( geometry, ourMaterial );
-
-var lightMesh = new THREE.Mesh( new THREE.SphereGeometry( 1, 16, 16),
-  new THREE.MeshBasicMaterial ({color: 0xffff00, wireframe:true}));
+var lightMesh = new THREE.Mesh(
+  new THREE.SphereGeometry( 1, 16, 16),
+  new THREE.MeshBasicMaterial({
+    color: 0xffff00, wireframe:true
+  }));
 lightMesh.position.set( 7.0, 7.0, 7.0 );
-uniforms.pointLightPosition.value = new THREE.Vector3(lightMesh.position.x,
-  lightMesh.position.y,
-  lightMesh.position.z);
+
+
+// UNIFORMs //
+uniforms_default = {
+  cspec:	{ type: "v3", value: new THREE.Vector3() },
+  cdiff:	{ type: "v3", value: new THREE.Vector3() },
+  roughness: {type: "f", value: 0.5},
+  pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+  clight:	{ type: "v3", value: new THREE.Vector3() },
+};
+uniforms = uniforms_default;
+
+//// TODO move promise in utility.js
+//var loaderPromise = new Promise(function(resolve, reject) {
+//  function loadDone(x) {
+//    console.log("loader successfully completed loading task");
+//    resolve(x); // it went ok!
+//  }
+//  var loader = new THREE.TextureLoader();
+//  loader.load("https://codefisher.org/static/images/pastel-svg/256/bullet-star.png", loadDone);
+//});
+//
+//var diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
+//var specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
+//var roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
+//
+//uniforms_texture = {
+//  specularMap: { type: "t", value: specularMap}, // Questo viene eseguito prima del loading
+//  diffuseMap:	{ type: "t", value: diffuseMap},// Questo viene eseguito prima del loading
+//  roughnessMap:	{ type: "t", value: roughnessMap},// Questo viene eseguito prima del loading
+//  pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+//  clight:	{ type: "v3", value: new THREE.Vector3() },
+//  textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
+//};
+
+//uniforms_default.pointLightPosition.value = uniforms_default.pointLightPosition.value =
+uniforms_default.pointLightPosition.value = 
+  new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+//uniforms_texture.pointLightPosition.value =
+//  new THREE.Vector3(
+//    lightMesh.position.x,
+//    lightMesh.position.y,
+//    lightMesh.position.z
+//  );
+
+// MATERIALs //
+defaultMaterial = new THREE.ShaderMaterial({
+  uniforms: uniforms_default,
+  vertexShader: vs_default,
+  fragmentShader: fs_default
+});
+//textureMaterial = new THREE.ShaderMaterial({
+//  uniforms: uniforms_texture,
+//  vertexShader: vs_texture,
+//  fragmentShader: fs_texture
+//});
+
+
+// FUNCTIONs //
 
 var gui;
 var stats = new Stats();
@@ -126,10 +88,11 @@ function init() {
   camera.position.set( 0, 10, 10 );
   scene.add( camera );
 
-  //scene.add( mesh );
-
   //DEBUG_knot = loadModel(modelNames.KNOT);
   //scene.add(DEBUG_knot);
+
+  //DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
+  //scene.add(DEBUG_sphere);
 
   var helmet = loadModel(modelNames.HELMET);
   //scene.add(helmet);

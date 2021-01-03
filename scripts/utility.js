@@ -1,82 +1,71 @@
-//geometry = new THREE.TorusKnotGeometry( 2, 0.5, 200, 32 );
-
-////var loader = new THREE.GLTFLoader();
-//var loader = new THREE.OBJLoader();
-//loader.useIndices = true;
-//	//loader.load( "./models/scene.gltf", function ( model ) {
-//	loader.load( "./models/model.obj", function ( model ) {
-//		console.log(model);
-
-//		//console.log(model.scene.children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]);
-
-//    //geometry = model.scene.children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[0]
-//    //                      .children[2].geometry;
-
-//    geometry = model.children[0].geometry;
-
-//		//geometry = obj.children[0].geometry;
-//		geometry.center();
-
-//    //ourMaterial = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-
-//		mesh = new THREE.Mesh( geometry, ourMaterial );
-
-
-//		mesh.scale.multiplyScalar( 0.1 );
-//		THREE.BufferGeometryUtils.computeTangents(geometry);
-//		scene.add( mesh );
-//	} );
-
-
 function loadModel(modelName) {
-  /* Given a modelNames element returns the respective mesh with default material */
+  /* Given a modelNames element
+   * returns the respective mesh with default material
+   * */
   switch (modelName) {
     case modelNames.KNOT:
-      console.log("knot");
+      console.log("loading knot");
 
       //var material = matParams_redPlastic;
       var geometry = new THREE.TorusKnotGeometry( 2, 0.5, 200, 32 );
 
-      return new THREE.Mesh( geometry, ourMaterial );
+      return new THREE.Mesh( geometry, defaultMaterial );
+
+      break;
+    case modelNames.SPHERE:
+      console.log("loading sphere");
+
+      // TODO texture shader
+			geometry = new THREE.SphereBufferGeometry( 2, 32, 32 );
+      return new THREE.Mesh( geometry, textureMaterial );
 
       break;
     case modelNames.HELMET:
-      console.log("helmet");
+      console.log("loading helmet");
 
       var loader = new THREE.GLTFLoader();
-      var local_mesh, local_geometry;
+      var local_geometry, local_material, local_mesh;
       loader.load(
         "models/scene.gltf",
         function ( model ) {
           DEBUG_tmp = model;
           //console.log(model);
 
+          var mesh_num = 0;
+
           model.scene.traverse(
             function (child) {
 
               if (child.type == "Mesh" || child.type == "SkinnedMesh") {
+                mesh_num++;
 
                 //console.log(child)
                 //console.log(child.type)
 
-                //DEBUG_child = child;
+                DEBUG_child = child;
 
                 local_geometry = child.geometry;
                 local_geometry.center();
 
+                // ------ MATERIAL STUFF ------ //
+                // // Mat 1
+                // local_material = defaultMaterial;
+
+                // Mat 2
+                const texture = new THREE
+                  .TextureLoader()
+                  .load('models/textures/rig_posedman5_baseColor.png');
+                texture.encoding = THREE.sRGBEncoding;
+                texture.flipY = false;
+                local_material = new THREE
+                  .MeshBasicMaterial( { map: texture } );
+
+                // // Mat 3
+                // local_material = child.material;
+
                 local_mesh = new THREE.Mesh(
                   local_geometry,
-                  ourMaterial
+                  local_material
                 );
 
                 local_mesh.scale.multiplyScalar(0.10);
@@ -88,11 +77,11 @@ function loadModel(modelName) {
               }
             }
           );
+          console.log(mesh_num + " mesh loaded");
         }
       );
       //scene.add(local_mesh);
       return local_mesh;
-      //throw new Error("HELMET loading not implemented yet!");
 
       break;
     default:
@@ -100,6 +89,8 @@ function loadModel(modelName) {
       break;
   }
 }
+
+
 
     /*
 const loader = new THREE.OBJLoader();
@@ -136,4 +127,19 @@ loader.load(
   }
 );
 */
+
+
+function loadTexture(file) {
+  // Prof's code
+  var texture = new THREE.TextureLoader().load( file , function ( texture ) {
+
+    texture.minFilter = THREE.LinearMipMapLinearFilter;
+    texture.anisotropy = renderer.getMaxAnisotropy();
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.offset.set( 0, 0 );
+    texture.needsUpdate = true;
+    render();
+  } )
+  return texture;
+}
 
