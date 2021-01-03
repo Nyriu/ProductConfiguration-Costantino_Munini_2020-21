@@ -54,6 +54,19 @@ var loaderPromise = new Promise((resolve, reject) => {
    clight:	{ type: "v3", value: new THREE.Vector3() },
    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
   };
+
+  uniforms_default.pointLightPosition.value = 
+  new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+
+  textureMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_texture,
+    vertexShader: vs_texture,
+    fragmentShader: fs_texture
+  });
 });
 
 
@@ -72,12 +85,7 @@ var loaderPromise = new Promise((resolve, reject) => {
 //};
 
 //uniforms_default.pointLightPosition.value = uniforms_default.pointLightPosition.value =
-uniforms_default.pointLightPosition.value = 
-  new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
+
 //uniforms_texture.pointLightPosition.value =
 //  new THREE.Vector3(
 //    lightMesh.position.x,
@@ -86,16 +94,11 @@ uniforms_default.pointLightPosition.value =
 //  );
 
 // MATERIALs //
-defaultMaterial = new THREE.ShaderMaterial({
-  uniforms: uniforms_default,
-  vertexShader: vs_default,
-  fragmentShader: fs_default
-});
-//textureMaterial = new THREE.ShaderMaterial({
-//  uniforms: uniforms_texture,
-//  vertexShader: vs_texture,
-//  fragmentShader: fs_texture
-//});
+// defaultMaterial = new THREE.ShaderMaterial({
+//   uniforms: uniforms_default,
+//   vertexShader: vs_default,
+//   fragmentShader: fs_default
+// });
 
 
 // FUNCTIONs //
