@@ -10,3 +10,9 @@
 * Riorganizzazione file
 * Sperimentazioni con texture e shader
 * Problematiche con il loader delle texture
+
+
+## 04/01
+* Risolte problematiche con il loader delle texture
+* [hdrmaps](https://hdrmaps.com/mountain-view-3/)
+* TODO caricare modello a meshine

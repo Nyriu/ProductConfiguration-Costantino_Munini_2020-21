@@ -16,7 +16,7 @@ function loadModel(modelName) {
       console.log("loading sphere");
 
       // TODO texture shader
-			geometry = new THREE.SphereBufferGeometry( 2, 32, 32 );
+			geometry = new THREE.SphereBufferGeometry( 0.5, 32, 32 );
       return new THREE.Mesh( geometry, textureMaterial );
 
       break;
@@ -51,16 +51,23 @@ function loadModel(modelName) {
                 // // Mat 1
                 // local_material = defaultMaterial;
 
-                // Mat 2
-                const texture = new THREE
-                  .TextureLoader()
-                  .load('models/textures/rig_posedman5_baseColor.png');
+                // // Mat 2
+                // const texture = new THREE
+                //   .TextureLoader()
+                //   .load('models/textures/rig_posedman5_baseColor.png');
+                // texture.encoding = THREE.sRGBEncoding;
+                // texture.flipY = false;
+                // local_material = new THREE
+                //   .MeshBasicMaterial( { map: texture } );
+
+                // Mat 3
+                const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
                 texture.encoding = THREE.sRGBEncoding;
                 texture.flipY = false;
                 local_material = new THREE
                   .MeshBasicMaterial( { map: texture } );
 
-                // // Mat 3
+                // // Mat 4
                 // local_material = child.material;
 
                 local_mesh = new THREE.Mesh(

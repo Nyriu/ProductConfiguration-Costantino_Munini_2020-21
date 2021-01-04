@@ -38,28 +38,44 @@ var specularMap;
 var roughnessMap;
 
 var loaderPromise = new Promise((resolve, reject) => {
-  diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-  specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-  roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
-  console.log("textures: " + diffuseMap + " " + specularMap + " " + roughnessMap)
+  //diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
+  //specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
+  //roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
+
+  diffuseMap   = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Diffuse.png" );
+  specularMap  = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Specular.png" );
+  roughnessMap = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Roughness.png" );
   resolve(true);
 })
 .then(() => {
+
+  console.log("textures: " + diffuseMap + " " + specularMap + " " + roughnessMap)
+  console.log(diffuseMap)
+  console.log(specularMap)
+  console.log(roughnessMap)
+
   console.log("then")
+
   uniforms_texture = {
-   specularMap: { type: "t", value: specularMap },
-   diffuseMap:	{ type: "t", value: diffuseMap },
-   roughnessMap:	{ type: "t", value: roughnessMap },
-   pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-   clight:	{ type: "v3", value: new THREE.Vector3() },
-   textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
+    specularMap:   { type: "t", value: specularMap },
+    diffuseMap:	  { type: "t", value: diffuseMap },
+    roughnessMap:	{ type: "t", value: roughnessMap },
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
   };
 
-  uniforms_default.pointLightPosition.value = 
-  new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
+  uniforms_texture.pointLightPosition.value =
+    new THREE.Vector3(
+      lightMesh.position.x,
+      lightMesh.position.y,
+      lightMesh.position.z
+    );
+
+  uniforms_texture.clight.value = new THREE.Vector3(
+    lightParameters.red * lightParameters.intensity,
+    lightParameters.green * lightParameters.intensity,
+    lightParameters.blue * lightParameters.intensity
   );
 
   textureMaterial = new THREE.ShaderMaterial({
@@ -67,6 +83,10 @@ var loaderPromise = new Promise((resolve, reject) => {
     vertexShader: vs_texture,
     fragmentShader: fs_texture
   });
+
+
+  DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
+  scene.add(DEBUG_sphere);
 });
 
 
@@ -86,12 +106,21 @@ var loaderPromise = new Promise((resolve, reject) => {
 
 //uniforms_default.pointLightPosition.value = uniforms_default.pointLightPosition.value =
 
-//uniforms_texture.pointLightPosition.value =
-//  new THREE.Vector3(
-//    lightMesh.position.x,
-//    lightMesh.position.y,
-//    lightMesh.position.z
-//  );
+
+
+uniforms_default.pointLightPosition.value = 
+new THREE.Vector3(
+  lightMesh.position.x,
+  lightMesh.position.y,
+  lightMesh.position.z
+);
+
+uniforms_default.clight.value = new THREE.Vector3(
+  lightParameters.red * lightParameters.intensity,
+  lightParameters.green * lightParameters.intensity,
+  lightParameters.blue * lightParameters.intensity
+);
+
 
 // MATERIALs //
 // defaultMaterial = new THREE.ShaderMaterial({
@@ -119,7 +148,7 @@ function init() {
   //DEBUG_knot = loadModel(modelNames.KNOT);
   //scene.add(DEBUG_knot);
 
-  //DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
+  ////DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
   //scene.add(DEBUG_sphere);
 
   var helmet = loadModel(modelNames.HELMET);
