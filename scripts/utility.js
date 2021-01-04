@@ -20,8 +20,8 @@ function loadModel(modelName) {
       return new THREE.Mesh( geometry, textureMaterial );
 
       break;
-    case modelNames.HELMET:
-      console.log("loading helmet");
+    case modelNames.OLD_HELMET:
+      console.log("loading single mesh helmet");
 
       var loader = new THREE.GLTFLoader();
       var local_geometry, local_material, local_mesh;
@@ -84,6 +84,81 @@ function loadModel(modelName) {
               }
             }
           );
+          console.log(mesh_num + " mesh loaded");
+        }
+      );
+      //scene.add(local_mesh);
+      return local_mesh;
+
+      break;
+    case modelNames.HELMET:
+      console.log("loading helmet");
+
+      var loader = new THREE.GLTFLoader();
+      var local_geometry, local_material, local_mesh;
+      var helmet = new THREE.Object3D();
+
+			helmet_center_geom = new THREE.SphereBufferGeometry( 0.2, 8, 8 );
+      helmet_center = new THREE.Mesh( helmet_center_geom, defaultMaterial );
+      helmet_center.name = "center";
+      helmet.add(helmet_center);
+
+      loader.load(
+        "models/helmet.gltf",
+        function ( model ) {
+          DEBUG_helmet = model;
+          //console.log(model);
+
+          var mesh_num = 0;
+
+          // scene.add(model.scene);
+
+          model.scene.traverse(
+            function (child) {
+
+              if (child.type == "Mesh" || child.type == "SkinnedMesh") {
+                mesh_num++;
+
+                console.log(child)
+                //console.log(child.type)
+
+                DEBUG_child = child;
+
+                local_geometry = child.geometry;
+                //local_geometry.center();
+
+                // ------ MATERIAL STUFF ------ //
+                // Mat 1
+                local_material = defaultMaterial;
+
+                // // Mat 2
+                // const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
+                // texture.encoding = THREE.sRGBEncoding;
+                // texture.flipY = false;
+                // local_material = new THREE
+                //   .MeshBasicMaterial( { map: texture } );
+
+                local_mesh = new THREE.Mesh(
+                  local_geometry,
+                  local_material
+                );
+
+                //local_mesh.scale.multiplyScalar(0.10);
+                local_mesh.scale.multiplyScalar(2);
+                //local_mesh.position.set(1.0, 1.0, 1.0);
+
+                DEBUG_mesh = local_mesh;
+
+                //scene.add(local_mesh);
+                helmet.add(local_mesh);
+                //console.log("------------------------")
+              }
+            }
+          );
+
+          DEBUG_helmet = helmet;
+          scene.add(helmet);
+
           console.log(mesh_num + " mesh loaded");
         }
       );

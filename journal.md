@@ -15,4 +15,5 @@
 ## 04/01
 * Risolte problematiche con il loader delle texture
 * [hdrmaps](https://hdrmaps.com/mountain-view-3/)
-* TODO caricare modello a meshine
+* Corretto loading modello multi-mesh
+* Problematica: spostare le mesh in modo che l'elmo sia centrato sull'origine senza perdere le posizioni relative delle mesh

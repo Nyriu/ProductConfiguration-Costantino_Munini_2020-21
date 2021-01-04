@@ -2,6 +2,7 @@
 const modelNames = {
   TORUS : "TorusKnot",
   SPHERE : "Sphere",
+  OLD_HELMET : "old_VikingHelmet",
   HELMET : "VikingHelmet",
 }
 
@@ -54,6 +55,7 @@ var textureMaterial;
 
 // DEBUG STUFF
 var DEBUG_tmp;
+var DEBUG_helmet;
 var DEBUG_child;
 var DEBUG_mesh;
 var DEBUG_knot;

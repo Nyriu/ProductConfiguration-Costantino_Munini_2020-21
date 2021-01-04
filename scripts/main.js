@@ -86,7 +86,7 @@ var loaderPromise = new Promise((resolve, reject) => {
 
 
   DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
-  scene.add(DEBUG_sphere);
+  //scene.add(DEBUG_sphere);
 });
 
 
@@ -123,11 +123,11 @@ uniforms_default.clight.value = new THREE.Vector3(
 
 
 // MATERIALs //
-// defaultMaterial = new THREE.ShaderMaterial({
-//   uniforms: uniforms_default,
-//   vertexShader: vs_default,
-//   fragmentShader: fs_default
-// });
+defaultMaterial = new THREE.ShaderMaterial({
+  uniforms: uniforms_default,
+  vertexShader: vs_default,
+  fragmentShader: fs_default
+});
 
 
 // FUNCTIONs //
@@ -138,7 +138,6 @@ var stats = new Stats();
 function init() {
 
   renderer.setClearColor( 0xf0f0f0 );
-
 
   Coordinates.drawAllAxes();
 
@@ -151,9 +150,11 @@ function init() {
   ////DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
   //scene.add(DEBUG_sphere);
 
-  var helmet = loadModel(modelNames.HELMET);
+  //var helmet = loadModel(modelNames.OLD_HELMET);
   //scene.add(helmet);
 
+  var helmet = loadModel(modelNames.HELMET);
+  
   scene.add(lightMesh);
 
   document.body.appendChild( renderer.domElement );
