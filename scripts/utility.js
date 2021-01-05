@@ -107,28 +107,13 @@ function loadModel(modelName) {
         "models/helmet.gltf",
         function ( model ) {
           DEBUG_helmet = model;
-          //console.log(model);
 
           var mesh_num = 0;
 
-          // scene.add(model.scene);
-
-          ////const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
-          //const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
-          ////texture.encoding = THREE.sRGBEncoding;
-          ////texture.flipY = false;
-          //local_material = new THREE
-          //  .MeshBasicMaterial( { map: texture } );
-
           model.scene.traverse(
             function (child) {
-
               if (child.type == "Mesh" || child.type == "SkinnedMesh") {
                 mesh_num++;
-
-                //console.log(child)
-                //console.log(child.type)
-
                 DEBUG_child = child;
 
                 local_geometry = child.geometry;
@@ -137,8 +122,8 @@ function loadModel(modelName) {
                 local_mesh = new THREE.Mesh(
                   local_geometry,
                   //local_material
-                  //textureMaterial
-                  normalsMaterial
+                  textureMaterial
+                  //normalsMaterial
                 );
 
                 //local_mesh.scale.multiplyScalar(0.10);

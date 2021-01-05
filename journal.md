@@ -17,3 +17,8 @@
 * [hdrmaps](https://hdrmaps.com/mountain-view-3/)
 * Corretto loading modello multi-mesh
 * Problematica: spostare le mesh in modo che l'elmo sia centrato sull'origine senza perdere le posizioni relative delle mesh
+
+
+## 05/01
+* Metalness e normalMap
+* TODO verificare che metalness sia corretto

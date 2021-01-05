@@ -24,57 +24,39 @@ uniforms_default = {
 uniforms = uniforms_default;
 
 //// TODO move promise in utility.js
-//var loaderPromise = new Promise(function(resolve, reject) {
-//  function loadDone(x) {
-//    console.log("loader successfully completed loading task");
-//    resolve(x); // it went ok!
-//  }
-//  var loader = new THREE.TextureLoader();
-//  loader.load("https://codefisher.org/static/images/pastel-svg/256/bullet-star.png", loadDone);
-//});
 
 var diffuseMap;
 var specularMap;
 var roughnessMap;
 
-/*
+
 var loaderPromise = new Promise((resolve, reject) => {
-  //diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-  diffuseMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_BaseColor.png" );
+  normalMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
+  normalMap.flipY = false;
+  //normalMap.encoding = THREE.sRGBEncoding;
+
+  diffuseMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
   diffuseMap.flipY = false;
   diffuseMap.encoding = THREE.sRGBEncoding;
 
-  //specularMap  = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Specular.png" );
-  //specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" ); // TODO fix
-  specularMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_BaseColor.png" ); // TODO fix
-  specularMap.flipY = false;
-  specularMap.encoding = THREE.sRGBEncoding;
-
-  roughnessMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_Roughness.png" );
+  roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
   roughnessMap.flipY = false;
-  roughnessMap.encoding = THREE.sRGBEncoding;
+  //roughnessMap.encoding = THREE.sRGBEncoding;
 
-
-  //diffuseMap   = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Diffuse.png" );
-  //specularMap  = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Specular.png" );
-  //roughnessMap = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Roughness.png" );
+  metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
+  metalnessMap.flipY = false;
+  //metalnessMap.encoding = THREE.sRGBEncoding;
   resolve(true);
 })
 .then(() => {
-  //console.log("textures: " + diffuseMap + " " + specularMap + " " + roughnessMap)
-  //console.log(diffuseMap)
-  //console.log(specularMap)
-  //console.log(roughnessMap)
-
-  //console.log("then")
-
   uniforms_texture = {
-    specularMap:   { type: "t", value: specularMap },
+    normalMap:	  { type: "t", value: normalMap },
     diffuseMap:	  { type: "t", value: diffuseMap },
     roughnessMap:	{ type: "t", value: roughnessMap },
+    metalnessMap:	{ type: "t", value: metalnessMap },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
   };
 
   uniforms_texture.pointLightPosition.value = new THREE.Vector3(
@@ -91,27 +73,20 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
-    vertexShader: vs_texture,
+    vertexShader:   vs_texture,
     fragmentShader: fs_texture
   });
-
-
-  //DEBUG_sphere = loadModel(modelNames.SPHERE);
-  //scene.add(DEBUG_sphere);
-  
   var helmet = loadModel(modelNames.HELMET);
 });
-*/
 
 
+
+/*
+// Normal map example
 var loaderPromise = new Promise((resolve, reject) => {
-  //diffuseMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_BaseColor.png" );
-  //diffuseMap.flipY = false;
-  //diffuseMap.encoding = THREE.sRGBEncoding;
-
   normalMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_Normal.png" );
   normalMap.flipY = false;
-  normalMap.encoding = THREE.sRGBEncoding;
+  //normalMap.encoding = THREE.sRGBEncoding;
 
   resolve(true);
 })
@@ -151,6 +126,8 @@ var loaderPromise = new Promise((resolve, reject) => {
   
   var helmet = loadModel(modelNames.HELMET);
 });
+*/
+
 
 //
 //var diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
