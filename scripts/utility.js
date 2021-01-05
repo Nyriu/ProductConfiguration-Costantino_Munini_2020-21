@@ -113,13 +113,20 @@ function loadModel(modelName) {
 
           // scene.add(model.scene);
 
+          ////const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
+          //const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
+          ////texture.encoding = THREE.sRGBEncoding;
+          ////texture.flipY = false;
+          //local_material = new THREE
+          //  .MeshBasicMaterial( { map: texture } );
+
           model.scene.traverse(
             function (child) {
 
               if (child.type == "Mesh" || child.type == "SkinnedMesh") {
                 mesh_num++;
 
-                console.log(child)
+                //console.log(child)
                 //console.log(child.type)
 
                 DEBUG_child = child;
@@ -127,24 +134,15 @@ function loadModel(modelName) {
                 local_geometry = child.geometry;
                 //local_geometry.center();
 
-                // ------ MATERIAL STUFF ------ //
-                // Mat 1
-                local_material = defaultMaterial;
-
-                // // Mat 2
-                // const texture = loadTexture('models/textures/rig_posedman5_baseColor.png');
-                // texture.encoding = THREE.sRGBEncoding;
-                // texture.flipY = false;
-                // local_material = new THREE
-                //   .MeshBasicMaterial( { map: texture } );
-
                 local_mesh = new THREE.Mesh(
                   local_geometry,
-                  local_material
+                  //local_material
+                  //textureMaterial
+                  normalsMaterial
                 );
 
                 //local_mesh.scale.multiplyScalar(0.10);
-                local_mesh.scale.multiplyScalar(2);
+                local_mesh.scale.multiplyScalar(8);
                 //local_mesh.position.set(1.0, 1.0, 1.0);
 
                 DEBUG_mesh = local_mesh;
@@ -157,6 +155,7 @@ function loadModel(modelName) {
           );
 
           DEBUG_helmet = helmet;
+          helmet.position.set(0,-14,0); // TODO centrare in Maya
           scene.add(helmet);
 
           console.log(mesh_num + " mesh loaded");

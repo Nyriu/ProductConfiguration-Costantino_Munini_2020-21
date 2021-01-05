@@ -37,24 +37,36 @@ var diffuseMap;
 var specularMap;
 var roughnessMap;
 
+/*
 var loaderPromise = new Promise((resolve, reject) => {
   //diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-  //specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-  //roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
+  diffuseMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_BaseColor.png" );
+  diffuseMap.flipY = false;
+  diffuseMap.encoding = THREE.sRGBEncoding;
 
-  diffuseMap   = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Diffuse.png" );
-  specularMap  = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Specular.png" );
-  roughnessMap = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Roughness.png" );
+  //specularMap  = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Specular.png" );
+  //specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" ); // TODO fix
+  specularMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_BaseColor.png" ); // TODO fix
+  specularMap.flipY = false;
+  specularMap.encoding = THREE.sRGBEncoding;
+
+  roughnessMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_Roughness.png" );
+  roughnessMap.flipY = false;
+  roughnessMap.encoding = THREE.sRGBEncoding;
+
+
+  //diffuseMap   = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Diffuse.png" );
+  //specularMap  = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Specular.png" );
+  //roughnessMap = loadTexture( "models/textures/Wood_StaggeredFloorPlanks_Roughness.png" );
   resolve(true);
 })
 .then(() => {
+  //console.log("textures: " + diffuseMap + " " + specularMap + " " + roughnessMap)
+  //console.log(diffuseMap)
+  //console.log(specularMap)
+  //console.log(roughnessMap)
 
-  console.log("textures: " + diffuseMap + " " + specularMap + " " + roughnessMap)
-  console.log(diffuseMap)
-  console.log(specularMap)
-  console.log(roughnessMap)
-
-  console.log("then")
+  //console.log("then")
 
   uniforms_texture = {
     specularMap:   { type: "t", value: specularMap },
@@ -65,17 +77,16 @@ var loaderPromise = new Promise((resolve, reject) => {
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
   };
 
-  uniforms_texture.pointLightPosition.value =
-    new THREE.Vector3(
-      lightMesh.position.x,
-      lightMesh.position.y,
-      lightMesh.position.z
-    );
+  uniforms_texture.pointLightPosition.value = new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
 
   uniforms_texture.clight.value = new THREE.Vector3(
-    lightParameters.red * lightParameters.intensity,
+    lightParameters.red   * lightParameters.intensity,
     lightParameters.green * lightParameters.intensity,
-    lightParameters.blue * lightParameters.intensity
+    lightParameters.blue  * lightParameters.intensity
   );
 
   textureMaterial = new THREE.ShaderMaterial({
@@ -85,10 +96,61 @@ var loaderPromise = new Promise((resolve, reject) => {
   });
 
 
-  DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
+  //DEBUG_sphere = loadModel(modelNames.SPHERE);
   //scene.add(DEBUG_sphere);
+  
+  var helmet = loadModel(modelNames.HELMET);
 });
+*/
 
+
+var loaderPromise = new Promise((resolve, reject) => {
+  //diffuseMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_BaseColor.png" );
+  //diffuseMap.flipY = false;
+  //diffuseMap.encoding = THREE.sRGBEncoding;
+
+  normalMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_Normal.png" );
+  normalMap.flipY = false;
+  normalMap.encoding = THREE.sRGBEncoding;
+
+  resolve(true);
+})
+.then(() => {
+  uniforms_normals = {
+    cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
+    cdiff:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) },
+    roughness: {type: "f", value: 0.2},
+    normalMap:	{ type: "t", value: normalMap},
+    normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+  };
+
+
+  uniforms_normals.pointLightPosition.value = new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+
+  uniforms_normals.clight.value = new THREE.Vector3(
+    lightParameters.red   * lightParameters.intensity,
+    lightParameters.green * lightParameters.intensity,
+    lightParameters.blue  * lightParameters.intensity
+  );
+
+  normalsMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_normals,
+    vertexShader:   vs_normals,
+    fragmentShader: fs_normals
+  });
+
+
+  //DEBUG_sphere = loadModel(modelNames.SPHERE);
+  //scene.add(DEBUG_sphere);
+  
+  var helmet = loadModel(modelNames.HELMET);
+});
 
 //
 //var diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
@@ -153,7 +215,7 @@ function init() {
   //var helmet = loadModel(modelNames.OLD_HELMET);
   //scene.add(helmet);
 
-  var helmet = loadModel(modelNames.HELMET);
+  //var helmet = loadModel(modelNames.HELMET);
   
   scene.add(lightMesh);
 

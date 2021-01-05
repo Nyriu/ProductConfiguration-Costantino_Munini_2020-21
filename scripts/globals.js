@@ -42,6 +42,7 @@ var materialParameters = matParams_redPlastic
 
 var uniforms_default;
 var uniforms_texture;
+var uniforms_normals;
 //var uniforms = uniforms_default; // TODO remove
 
 
@@ -50,6 +51,7 @@ var uniforms_texture;
 
 var defaultMaterial;
 var textureMaterial;
+var normalsMaterial;
 
 
 
