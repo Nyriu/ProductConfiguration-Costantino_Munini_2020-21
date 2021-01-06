@@ -1,7 +1,7 @@
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
+var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.2, 1000 );
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
 var scene    = new THREE.Scene();
 
@@ -77,7 +77,8 @@ var loaderPromise = new Promise((resolve, reject) => {
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
     vertexShader:   vs_texture,
-    fragmentShader: fs_texture
+    fragmentShader: fs_texture,
+    side : THREE.DoubleSide,
   });
 
   // normalsMaterial
@@ -106,28 +107,14 @@ var loaderPromise = new Promise((resolve, reject) => {
   normalsMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_normals,
     vertexShader:   vs_normals,
-    fragmentShader: fs_normals
+    fragmentShader: fs_normals,
+    side : THREE.DoubleSide,
   });
 
   // Load and show the model
   var helmet = loadModel(modelNames.HELMET);
+  //noCheekPads(helmet);
 });
-
-
-//var diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-//var specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
-//var roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
-//
-//uniforms_texture = {
-//  specularMap: { type: "t", value: specularMap}, // Questo viene eseguito prima del loading
-//  diffuseMap:	{ type: "t", value: diffuseMap},// Questo viene eseguito prima del loading
-//  roughnessMap:	{ type: "t", value: roughnessMap},// Questo viene eseguito prima del loading
-//  pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-//  clight:	{ type: "v3", value: new THREE.Vector3() },
-//  textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }
-//};
-
-//uniforms_default.pointLightPosition.value = uniforms_default.pointLightPosition.value =
 
 uniforms_default.pointLightPosition.value = 
 new THREE.Vector3(
@@ -137,22 +124,22 @@ new THREE.Vector3(
 );
 
 uniforms_default.clight.value = new THREE.Vector3(
-  lightParameters.red * lightParameters.intensity,
+  lightParameters.red   * lightParameters.intensity,
   lightParameters.green * lightParameters.intensity,
-  lightParameters.blue * lightParameters.intensity
+  lightParameters.blue  * lightParameters.intensity
 );
 
 
 // MATERIALs //
 defaultMaterial = new THREE.ShaderMaterial({
   uniforms: uniforms_default,
-  vertexShader: vs_default,
-  fragmentShader: fs_default
+  vertexShader:   vs_default,
+  fragmentShader: fs_default,
+  side : THREE.DoubleSide,
 });
 
 
 // FUNCTIONs //
-
 var gui;
 var stats = new Stats();
 
@@ -167,16 +154,6 @@ function init() {
   camera.rotation.set( 0.6065836757257353, 0.8714509908129087, -0.4881194964406582);
   scene.add( camera );
 
-  //DEBUG_knot = loadModel(modelNames.KNOT);
-  //scene.add(DEBUG_knot);
-
-  ////DEBUG_sphere = loadModel(modelNames.SPHERE); // TODO la sfera usa shader texture e per ora NON funziona
-  //scene.add(DEBUG_sphere);
-
-  //var helmet = loadModel(modelNames.OLD_HELMET);
-  //scene.add(helmet);
-
-  //var helmet = loadModel(modelNames.HELMET);
   
   scene.add(lightMesh);
 
@@ -204,7 +181,6 @@ function init() {
 }
 
 function onResize() {
-
   renderer.setSize( window.innerWidth, window.innerHeight );
   camera.aspect = ( window.innerWidth / window.innerHeight );
   camera.updateProjectionMatrix();
@@ -222,32 +198,45 @@ function render() {
 
 }
 
-//function clearGui() {
+function clearGui() {
+	if ( gui ) gui.destroy();
+	gui = new dat.GUI();
+	gui.open();
+}
 
-//	if ( gui ) gui.destroy();
-//	gui = new dat.GUI();
-//	gui.open();
 
-//}
 
-//function buildGui() {
+function buildGui() {
 
-//	clearGui();
-//	lightSettings = gui.addFolder('Light Parameters');
-//	lightSettings.add(lightParameters,'red').min(0).max(1).onChange( function(newVal) { render() });
-//	lightSettings.add(lightParameters,'green').min(0).max(1).onChange( function(newVal) { render() });
-//	lightSettings.add(lightParameters,'blue').min(0).max(1).onChange( function(newVal) { render() });
-//	lightSettings.add(lightParameters,'intensity').min(0).max(10000).onChange( function(newVal) { render() });
+	clearGui();
+	lightSettings = gui.addFolder('Light Parameters');
+	lightSettings.add(lightParameters,'red').min(0).max(1).onChange( function(newVal) { render() });
+	lightSettings.add(lightParameters,'green').min(0).max(1).onChange( function(newVal) { render() });
+	lightSettings.add(lightParameters,'blue').min(0).max(1).onChange( function(newVal) { render() });
+	lightSettings.add(lightParameters,'intensity').min(0).max(20).onChange( function(newVal) { render() });
 
-//	materialSettings = gui.addFolder('material settings');
-//	materialSettings.add(materialParameters,'cdiff_red').min(0).max(1).onChange( function(newVal) { render() });
-//	materialSettings.add(materialParameters,'cdiff_green').min(0).max(1).onChange( function(newVal) { render() });
-//	materialSettings.add(materialParameters,'cdiff_blue').min(0).max(1).onChange( function(newVal) { render() });
-//	materialSettings.add(materialParameters,'cspec_red').min(0).max(1).onChange( function(newVal) { render() });
-//	materialSettings.add(materialParameters,'cspec_green').min(0).max(1).onChange( function(newVal) { render() });
-//	materialSettings.add(materialParameters,'cspec_blue').min(0).max(1).onChange( function(newVal) { render() });
-//	materialSettings.add(materialParameters,'roughness').min(0).max(1).onChange( function(newVal) { render() });
-//}
+	helmetSettings = gui.addFolder('Helmet settings');
+  helmetSettings.add( helmetParameters_show, 'show_leather').name('Leather').listen()
+    .onChange( function(newVal) {
+      showLeather(newVal);
+      helmetParameters_show.show_cheekPads = newVal;
+    });
+  helmetSettings.add( helmetParameters_show, 'show_cheekPads').name('Cheek Pads').listen()
+    .onChange( function(newVal) {
+      showCheekPads(newVal);
+    });
+
+
+  // TODO update to modify materials
+	//materialSettings = gui.addFolder('material settings');
+	//materialSettings.add(materialParameters,'cdiff_red').min(0).max(1).onChange( function(newVal) { render() });
+	//materialSettings.add(materialParameters,'cdiff_green').min(0).max(1).onChange( function(newVal) { render() });
+	//materialSettings.add(materialParameters,'cdiff_blue').min(0).max(1).onChange( function(newVal) { render() });
+	//materialSettings.add(materialParameters,'cspec_red').min(0).max(1).onChange( function(newVal) { render() });
+	//materialSettings.add(materialParameters,'cspec_green').min(0).max(1).onChange( function(newVal) { render() });
+	//materialSettings.add(materialParameters,'cspec_blue').min(0).max(1).onChange( function(newVal) { render() });
+	//materialSettings.add(materialParameters,'roughness').min(0).max(1).onChange( function(newVal) { render() });
+}
 
 function updateUniforms() {
 		uniforms.cspec.value = new THREE.Vector3(
@@ -269,7 +258,7 @@ function updateUniforms() {
 }
 
 init();
-//buildGui();
+buildGui();
 
 update();
 render();

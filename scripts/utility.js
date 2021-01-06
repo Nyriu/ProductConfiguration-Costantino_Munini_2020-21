@@ -154,11 +154,13 @@ function loadModel(modelName) {
           helmet.position.set(0,-14,0); // TODO centrare in Maya
           scene.add(helmet);
 
+          //noCheekPads(helmet);
+
           //console.log((mesh_num-1) + " mesh loaded");
         }
       );
       //scene.add(local_mesh);
-      return local_mesh;
+      return helmet;
 
       break;
     default:
@@ -166,45 +168,6 @@ function loadModel(modelName) {
       break;
   }
 }
-
-
-
-    /*
-const loader = new THREE.OBJLoader();
-loader.load(
-  // resource URL
-  "./models/model.obj",
-  // called when resource is loaded
-  function ( object ) {
-    //console.log(object);
-    //console.log(object.children[0]);
-
-    //scene.add( object.children[0] );
-    //scene.add( object.children[1] );
-    //scene.add( object.children[2] );
-    //scene.add( object.children[3] );
-    //scene.add( object.children[4] );
-    //scene.add( object.children[5] );
-    //scene.add( object.children[6] );
-    scene.add( object.children[7] );
-    //scene.add( object.children[8] );
-
-  },
-  // called when loading is in progresses
-  function ( xhr ) {
-
-    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-  },
-  // called when loading has errors
-  function ( error ) {
-
-    console.log( 'An error happened' );
-
-  }
-);
-*/
-
 
 function loadTexture(file) {
   // Prof's code
@@ -218,5 +181,40 @@ function loadTexture(file) {
     render();
   } )
   return texture;
+}
+
+
+
+// TODO fare in modo che il modello sia completamente pronto prima di eseguire questi
+function showCheekPads(show=true, helmet=DEBUG_helmet) {
+  var comps = [
+    helmet_components_names.CHEEK_PAD_LEFT,
+    helmet_components_names.CHEEK_PAD_RIGHT,
+    helmet_components_names.CONNECTOR_LEFT,
+    helmet_components_names.CONNECTOR_RIGHT
+  ];
+
+  comps.forEach( c => {
+    helmet.getChildByName(c).visible = show;
+  })
+
+  render();
+}
+
+function showLeather(show=true, helmet=DEBUG_helmet) {
+  var comps = [
+    helmet_components_names.NECK_ROLL,
+    helmet_components_names.CHEEK_PAD_LEFT,
+    helmet_components_names.CHEEK_PAD_RIGHT,
+    helmet_components_names.CONNECTOR_LEFT,
+    helmet_components_names.CONNECTOR_RIGHT
+  ];
+  console.log(comps);
+
+  comps.forEach( c => {
+    helmet.getChildByName(c).visible = show;
+  })
+
+  render();
 }
 

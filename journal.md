@@ -25,5 +25,7 @@
 
 ## 06/01
 * Materiali differenti per mesh
+* Aggiunto semplice gui per modificare modello (solo show/hide di mesh al momento)
 * TODO pulizia
+* TODO fix riflesso interno calotta
 * TODO creare materiali

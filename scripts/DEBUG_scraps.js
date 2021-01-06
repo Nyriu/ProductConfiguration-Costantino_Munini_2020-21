@@ -101,3 +101,38 @@ DEBUG_helmet.traverse(
 
 
 
+
+DEBUG_helmet.traverse(
+  function (child) {
+    if (child.name != "center" && (child.type == "Mesh" || child.type == "SkinnedMesh")) {
+      DEBUG_child = child;
+      console.log("zering");
+
+      console.log(child.geometry.boundingBox.center());
+
+      console.log(child.position);
+      var old_pos = child.position;
+      //console.log(old_pos);
+      child.position.set(
+        old_pos.x,
+        //0.0,
+        - child.geometry.boundingBox.center().y,
+        old_pos.z
+      );
+      console.log(child.position);
+      console.log("----------");
+
+      render();
+    }
+  }
+);
+
+
+
+// --------------------------------------------------------------------------------
+
+showCheekPads(false);
+
+showLeather(false);
+showLeather(true);
+

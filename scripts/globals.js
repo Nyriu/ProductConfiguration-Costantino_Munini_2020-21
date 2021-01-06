@@ -33,14 +33,23 @@ for (k in helmet_components) {
   helmet_ids2components[id] = k;
 }
 
+const helmet_components_names = {}
+for (k in helmet_components) {
+  helmet_components_names[k] = k;
+}
+
+var helmetParameters_show = {
+  show_leather   : true,
+  show_cheekPads : true,
+}
 
 
 // LIGHTs
 // default: white, 1.0 intensity
 var lightParameters = {
-  red: 1.0,
+  red:   1.0,
   green: 1.0,
-  blue: 1.0,
+  blue:  1.0,
   intensity: 1.0,
 }
 
