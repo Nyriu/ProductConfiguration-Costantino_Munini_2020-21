@@ -116,7 +116,7 @@
       .down {
         display: flex;
         padding: 5rem;
-        height: 30rem;
+        height: 35rem;
       }
       .down .price {
         flex-grow: 0.3;
@@ -138,6 +138,11 @@
       p {
         padding: 1rem;
         font-size: 1.2rem;
+      }
+      .down .info ul {
+        list-style-position: inside;
+        font-size: 1.2rem;
+        padding-left: 3rem;
       }
     </style>
   </head>
@@ -169,40 +174,40 @@
             <li>
               Materiale casco
               <div class="select" style="width:200px;">
-                <select>
-                  <option value="0">Citroen</option>
-                  <option value="1">Audi</option>
-                  <option value="2">BMW</option>
+                <select id="casco">
+                  <option value="0">Materiale1</option>
+                  <option value="1">Materiale2</option>
+                  <option value="2">Materiale3</option>
                 </select>
               </div>
             </li>
             <li>
-              Materiale cuoio
+              Materiale guanciali
               <div class="select" style="width:200px;">
-                <select>
-                  <option value="0">Citroen</option>
-                  <option value="1">Audi</option>
-                  <option value="2">BMW</option>
+                <select id="guanciali">
+                  <option value="0">Materiale1</option>
+                  <option value="1">Materiale2</option>
+                  <option value="2">Materiale3</option>
                 </select>
               </div>
             </li>
             <li>
               Ambiente
               <div class="select" style="width:200px;">
-                <select>
-                  <option value="0">Citroen</option>
-                  <option value="1">Audi</option>
-                  <option value="2">BMW</option>
+                <select id="ambiente">
+                  <option value="0">Ambiente1</option>
+                  <option value="1">Ambiente2</option>
+                  <option value="2">Ambiente3</option>
                 </select>
               </div>
             </li>
             <li>
               Illuminazione
               <div class="select" style="width:200px;">
-                <select>
-                  <option value="0">Citroen</option>
-                  <option value="1">Audi</option>
-                  <option value="2">BMW</option>
+                <select id="illuminazione">
+                  <option value="0">Luce1</option>
+                  <option value="1">Luce2</option>
+                  <option value="2">Luce3</option>
                 </select>
               </div>
             </li>
@@ -216,15 +221,30 @@
         </div>
         <div class="info">
           <h2>Descrizione</h2>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. 
-          Consectetur nulla aliquid, recusandae inventore molestias voluptatem! Saepe est dolores aperiam illum? Ab officiis eos, nam commodi voluptatum dolore recusandae natus. 
-          Dolor. Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet iste nihil facere exercitationem dolor esse quisquam temporibus animi reprehenderit ut aut soluta, 
-          distinctio impedit, culpa cupiditate tenetur id sit eius!</p>
+          <p>
+            L'elmo vichingo propriamente detto, manufatto in ferro con inserti/decorazioni in bronzo e oro sviluppato nell'ambito della Cultura di Vendel, si compone di:
+          </p>
+            <ul>
+              <li>calotta "a coppo" realizzata da diverse piastre collegate tra loro da lamine rivettate, attraversata sull'asse fronte-retro da una cresta metallica di rinforzo;</li>
+              <li>lungo para-nuca (ove presente) di derivazione romano-celtica (v. Elmo gallo-romano);</li>
+              <li>guanciali (ove presenti) incernierati al coppo e realizzati sempre in piastre collegate tra loro;</li>
+              <li>visiera in metallo, dotata o meno di nasale, in alcuni casi sviluppante in una maschera vera e propria in piastre di metallo. </li>
+            </ul>
+          <p>
+            Le cerniere di aggancio della visiera con il coppo sono sempre protette da estrusioni metalliche raffiguranti le ali spiegate di un uccello,
+            la cui testa e coda, ove presenti, sviluppano rispettivamente nella cresta dell'elmo e nel nasale.
+          </p>
         </div>
       </div>
     </main>
     <footer>
 
     </footer>
+    <script>
+      var materialeCasco = document.getElementById("casco");
+      materialeCasco.addEventListener("change", function() {
+        console.log(materialeCasco.value);
+      });
+    </script>
   </body>
 </html>
