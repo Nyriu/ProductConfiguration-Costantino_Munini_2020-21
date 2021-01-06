@@ -150,32 +150,16 @@ void main() {
   float vDoth = max(dot( v, h ),0.000001);
   float nDotv = max(dot( n, v ),0.000001);
 
-  // ///////
-  // vec4 lPosition = viewMatrix * vec4( pointLightPosition, 1.0 );
-  // vec3 l = normalize(lPosition.xyz - vPosition.xyz);
-  // vec3 n = normalize( vNormal );  // interpolation destroys normalization, so we have to normalize
-  // vec3 v = normalize( -vPosition);
-  // vec3 h = normalize( v + l);
-  // // small quantity to prevent divisions by 0
-  // float nDotl = max(dot( n, l ),0.000001);
-  // float lDoth = max(dot( l, h ),0.000001);
-  // float nDoth = max(dot( n, h ),0.000001);
-  // float vDoth = max(dot( v, h ),0.000001);
-  // float nDotv = max(dot( n, v ),0.000001);
-  // ////
-
   metalness = texture2D( metalnessMap, vUv*textureRepeat ).r;
-  //metalness = pow( metalness, 2.2); // texture in sRGB, linearize // TODO?
-  //metalness = 1.0; // DEBUG
 
   cdiff = texture2D( diffuseMap, vUv*textureRepeat ).rgb;
   cdiff = pow( cdiff, vec3(2.2)); // texture in sRGB, linearize
 
-  // TODO verificare correttezza
   cspec = (1.0-metalness)*vec3(0.04) + metalness*cdiff;
   cdiff = (1.0-metalness)*cdiff;
 
   roughness = texture2D( roughnessMap, vUv*textureRepeat).r; // no need to linearize roughness map
+
   vec3 fresnel = FSchlick(vDoth, cspec);
   float alpha = roughness * roughness;
   vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/

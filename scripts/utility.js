@@ -97,34 +97,43 @@ function loadModel(modelName) {
       var loader = new THREE.GLTFLoader();
       var local_geometry, local_material, local_mesh;
       var helmet = new THREE.Object3D();
+      var mesh_num = 0;
 
 			helmet_center_geom = new THREE.SphereBufferGeometry( 0.2, 8, 8 );
       helmet_center = new THREE.Mesh( helmet_center_geom, defaultMaterial );
-      helmet_center.name = "center";
+      helmet_center.name = helmet_ids2components[mesh_num];
+      mesh_num++;
       helmet.add(helmet_center);
+
 
       loader.load(
         "models/helmet.gltf",
         function ( model ) {
           DEBUG_helmet = model;
 
-          var mesh_num = 0;
 
           model.scene.traverse(
             function (child) {
               if (child.type == "Mesh" || child.type == "SkinnedMesh") {
-                mesh_num++;
                 DEBUG_child = child;
 
                 local_geometry = child.geometry;
                 //local_geometry.center();
 
+                local_material = textureMaterial;
+                if (
+                  //helmet_components.NASAL == mesh_num
+                  helmet_components.VISOR_UPPER == mesh_num ||
+                  helmet_components.VISOR_LOWER == mesh_num
+                ) {
+                  local_material = normalsMaterial;
+                }
                 local_mesh = new THREE.Mesh(
                   local_geometry,
-                  //local_material
-                  textureMaterial
-                  //normalsMaterial
+                  local_material
                 );
+
+                local_mesh.name = helmet_ids2components[mesh_num];
 
                 //local_mesh.scale.multiplyScalar(0.10);
                 local_mesh.scale.multiplyScalar(8);
@@ -134,6 +143,8 @@ function loadModel(modelName) {
 
                 //scene.add(local_mesh);
                 helmet.add(local_mesh);
+
+                mesh_num++;
                 //console.log("------------------------")
               }
             }
@@ -143,7 +154,7 @@ function loadModel(modelName) {
           helmet.position.set(0,-14,0); // TODO centrare in Maya
           scene.add(helmet);
 
-          console.log(mesh_num + " mesh loaded");
+          //console.log((mesh_num-1) + " mesh loaded");
         }
       );
       //scene.add(local_mesh);

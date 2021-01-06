@@ -21,4 +21,9 @@
 
 ## 05/01
 * Metalness e normalMap
-* TODO verificare che metalness sia corretto
+* UI e template sito
+
+## 06/01
+* Materiali differenti per mesh
+* TODO pulizia
+* TODO creare materiali

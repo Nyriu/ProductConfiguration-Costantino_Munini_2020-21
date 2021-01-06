@@ -6,6 +6,34 @@ const modelNames = {
   HELMET : "VikingHelmet",
 }
 
+const helmet_components = {
+  "CENTER" : 0, // Obj3D Sphere
+
+  // maybe not historically accurate...
+  // metal components
+  "CALOTTE" : 1, // calotta 
+
+  "NASAL" : 4, // nasale
+
+  "VISOR_UPPER" : 3, // or peak, vizor, vizard
+  "VISOR_LOWER" : 5, // visiera
+
+  // leather components
+  "NECK_ROLL"       : 2, // paranuca
+  "CHEEK_PAD_LEFT"  : 7, // guanciale
+  "CHEEK_PAD_RIGHT" : 9, // guanciale
+  
+  "CONNECTOR_LEFT"  : 6, // pezzo che collega
+  "CONNECTOR_RIGHT" : 8, // calotta-guanciale
+};
+
+const helmet_ids2components = {}
+for (k in helmet_components) {
+  var id = helmet_components[k];
+  helmet_ids2components[id] = k;
+}
+
+
 
 // LIGHTs
 // default: white, 1.0 intensity

@@ -49,6 +49,9 @@ var loaderPromise = new Promise((resolve, reject) => {
   resolve(true);
 })
 .then(() => {
+
+
+  // textureMaterial
   uniforms_texture = {
     normalMap:	  { type: "t", value: normalMap },
     diffuseMap:	  { type: "t", value: diffuseMap },
@@ -76,21 +79,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     vertexShader:   vs_texture,
     fragmentShader: fs_texture
   });
-  var helmet = loadModel(modelNames.HELMET);
-});
 
-
-
-/*
-// Normal map example
-var loaderPromise = new Promise((resolve, reject) => {
-  normalMap = loadTexture( "models/textures/T_VikingBerserk_UpperArmor_Normal.png" );
-  normalMap.flipY = false;
-  //normalMap.encoding = THREE.sRGBEncoding;
-
-  resolve(true);
-})
-.then(() => {
+  // normalsMaterial
   uniforms_normals = {
     cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
     cdiff:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) },
@@ -100,7 +90,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
   };
-
 
   uniforms_normals.pointLightPosition.value = new THREE.Vector3(
     lightMesh.position.x,
@@ -120,16 +109,11 @@ var loaderPromise = new Promise((resolve, reject) => {
     fragmentShader: fs_normals
   });
 
-
-  //DEBUG_sphere = loadModel(modelNames.SPHERE);
-  //scene.add(DEBUG_sphere);
-  
+  // Load and show the model
   var helmet = loadModel(modelNames.HELMET);
 });
-*/
 
 
-//
 //var diffuseMap   = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
 //var specularMap  = loadTexture( "models/textures/rig_posedman5_baseColor.png" );
 //var roughnessMap = loadTexture( "models/textures/rig_posedman5_metallicRoughness.png" );
@@ -144,8 +128,6 @@ var loaderPromise = new Promise((resolve, reject) => {
 //};
 
 //uniforms_default.pointLightPosition.value = uniforms_default.pointLightPosition.value =
-
-
 
 uniforms_default.pointLightPosition.value = 
 new THREE.Vector3(
@@ -180,7 +162,9 @@ function init() {
 
   Coordinates.drawAllAxes();
 
-  camera.position.set( 0, 10, 10 );
+  //camera.position.set( 0, 10, 10 );
+  camera.position.set( 1.3287146680718807, -0.6371460764972972, 0.918281954038343);
+  camera.rotation.set( 0.6065836757257353, 0.8714509908129087, -0.4881194964406582);
   scene.add( camera );
 
   //DEBUG_knot = loadModel(modelNames.KNOT);
