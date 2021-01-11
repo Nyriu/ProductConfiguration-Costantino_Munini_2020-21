@@ -136,3 +136,95 @@ showCheekPads(false);
 showLeather(false);
 showLeather(true);
 
+// --------------------------------------------------------------------------------
+
+
+function rescaleUVs(uv_bufAttr) {
+  // Not perfect but gets the job done
+  const in_arr = uv_bufAttr.array;
+  min_x = min_y = Infinity;
+  max_x = max_y = -Infinity;
+
+  max_delta_x = -Infinity;
+  max_delta_y = -Infinity;
+
+  i = 0;
+  while ( i < in_arr.length-2 ) {
+    x = in_arr[i];
+    i++;
+    y = in_arr[i];
+
+    // delta
+    if (i > 2){ 
+      delta_x = Math.abs(in_arr[i-2] - x);
+      delta_y = Math.abs(in_arr[i-2] - x);
+      max_delta_x = (max_delta_x < delta_x) ? delta_x : max_delta_x;
+      max_delta_y = (max_delta_y < delta_y) ? delta_y : max_delta_y;
+    }
+    // TODO check if deltas are too big
+    // look lower visor it's like stretched?!
+
+    
+    // Min Max Stuff
+    if (min_x > x) {
+      min_x = x;
+    }
+    if (max_x < x) {
+      max_x = x;
+    }
+
+    if (min_y > y) {
+      min_y = y;
+    }
+    if (max_y < y) {
+      max_y = y;
+    }
+    i++;
+  }
+
+  console.log("mins " + min_x + " " + min_y);
+  console.log("mins " + max_x + " " + max_y);
+
+  console.log("ratio " + (max_x - min_x)/(max_y - min_y));
+
+  i=0
+  while ( i < in_arr.length-2 ) {
+    x = in_arr[i];
+    in_arr[i] = (x - min_x) * 1/max_x;
+
+    i++;
+    y = in_arr[i];
+    in_arr[i] = (y - min_y) * 1/max_y;
+
+    i++;
+  }
+
+
+  // TODO now translate
+
+  // TODO and scale
+
+  uv_bufAttr.array = in_arr;
+  uv_bufAttr.needsUpdate = true;
+  return uv_bufAttr;
+}
+
+left_pad = DEBUG_helmet.getObjectByName( helmet_components_names.CHEEK_PAD_LEFT )
+uvs = left_pad.geometry.attributes.uv
+new_uvs = rescaleUVs(uvs)
+left_pad.geometry.setAttribute("uv", new_uvs);
+
+visor_upper = DEBUG_helmet.getObjectByName( helmet_components_names.VISOR_UPPER )
+uvs = visor_upper.geometry.attributes.uv
+new_uvs = rescaleUVs(uvs)
+visor_upper.geometry.setAttribute("uv", new_uvs);
+
+visor_lower = DEBUG_helmet.getObjectByName( helmet_components_names.VISOR_LOWER )
+uvs = visor_lower.geometry.attributes.uv
+new_uvs = rescaleUVs(uvs)
+visor_lower.geometry.setAttribute("uv", new_uvs);
+
+
+render();
+
+

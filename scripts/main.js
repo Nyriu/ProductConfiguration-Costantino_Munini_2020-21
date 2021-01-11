@@ -30,7 +30,27 @@ var specularMap;
 var roughnessMap;
 
 
+//var loaderPromise = new Promise((resolve, reject) => {
+//  normalMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
+//  normalMap.flipY = false;
+//  //normalMap.encoding = THREE.sRGBEncoding;
+//
+//  diffuseMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
+//  diffuseMap.flipY = false;
+//  diffuseMap.encoding = THREE.sRGBEncoding;
+//
+//  roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
+//  roughnessMap.flipY = false;
+//  //roughnessMap.encoding = THREE.sRGBEncoding;
+//
+//  metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
+//  metalnessMap.flipY = false;
+//  //metalnessMap.encoding = THREE.sRGBEncoding;
+//  resolve(true);
+//})
+
 var loaderPromise = new Promise((resolve, reject) => {
+  // DEFAULT HELMET MAPS
   normalMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
   normalMap.flipY = false;
   //normalMap.encoding = THREE.sRGBEncoding;
@@ -46,11 +66,60 @@ var loaderPromise = new Promise((resolve, reject) => {
   metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
   metalnessMap.flipY = false;
   //metalnessMap.encoding = THREE.sRGBEncoding;
+
+
+  // COPPER MAPS
+  copper_normalMap    = loadTexture("materials/copper/cross_brushed_copper_normal.png");
+  //copper_diffuseMap   = loadTexture("materials/copper/cross_brushed_copper_diffuse.png");
+  copper_diffuseMap   = loadTexture("materials/copper/cross_brushed_copper_basecolor.png");
+  copper_roughnessMap = loadTexture("materials/copper/cross_brushed_copper_roughness.png");
+  copper_metalnessMap = loadTexture("materials/copper/cross_brushed_copper_metallic.png");
+  copper_diffuseMap.encoding = THREE.sRGBEncoding;
+
+  // LEATHER MAPS
+  // ugly
+  // leather_normalMap    = loadTexture("materials/leather/leather_bull_Normal.png");
+  // leather_diffuseMap   = loadTexture("materials/leather/leather_bull_Base_Color.png");
+  // //leather_diffuseMap   = loadTexture("materials/testing.png");
+  // leather_roughnessMap = loadTexture("materials/leather/leather_bull_Roughness.png");
+  // leather_metalnessMap = loadTexture("materials/leather/leather_bull_Metallic.png");
+  // leather_diffuseMap.encoding = THREE.sRGBEncoding;
+  /// ugly
+  /// leather_normalMap    = loadTexture("materials/Leather014_1K-PNG/NormalMap.png");
+  /// leather_diffuseMap   = loadTexture("materials/Leather014_1K-PNG/Leather014_1K_Color.png");
+  /// leather_roughnessMap = loadTexture("materials/Leather014_1K-PNG/Leather014_1K_Roughness.png");
+  /// leather_metalnessMap = loadTexture("materials/Leather014_1K-PNG/Metalness.png");
+  /// leather_diffuseMap.encoding = THREE.sRGBEncoding;
+
+  // Still ugly but better
+  // TODO
+  leather_normalMap    = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Normal.jpg");
+  leather_diffuseMap   = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Albedo.jpg");
+  leather_roughnessMap = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Roughness.jpg");
+  leather_metalnessMap = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/Metalness.png");
+  leather_diffuseMap.encoding = THREE.sRGBEncoding;
+
+  // GOLD MAPS
+  gold_normalMap    = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Normal.jpg");
+  gold_diffuseMap   = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Albedo.jpg");
+  gold_roughnessMap = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Roughness.jpg");
+  //gold_roughnessMap = loadTexture("materials/Imperfections_uh4obimc_2K_surface_ms/uh4obimc_2K_Roughness.jpg");
+  //gold_roughnessMap = loadTexture("materials/Imperfections_Grunge_tedxadjc_2K_surface_ms/tedxadjc_2K_Roughness.jpg");
+  gold_metalnessMap = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Metalness.jpg");
+  gold_diffuseMap.encoding = THREE.sRGBEncoding;
+
+  // METAL MAPS
+  // bad bad bad
+  metal_normalMap    = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Normal.jpg");
+  metal_diffuseMap   = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Albedo.jpg");
+  metal_roughnessMap = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Roughness.jpg");
+  metal_metalnessMap = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/Metalness.jpg");
+  metal_diffuseMap.encoding = THREE.sRGBEncoding;
+
   resolve(true);
 })
 .then(() => {
-
-
+  // DEFAULT HELMET MAPS
   // textureMaterial
   uniforms_texture = {
     normalMap:	  { type: "t", value: normalMap },
@@ -110,6 +179,128 @@ var loaderPromise = new Promise((resolve, reject) => {
     fragmentShader: fs_normals,
     side : THREE.DoubleSide,
   });
+
+  // copperMaterial
+  uniforms_copper = {
+    normalMap:	  { type: "t", value: copper_normalMap },
+    diffuseMap:	  { type: "t", value: copper_diffuseMap },
+    roughnessMap:	{ type: "t", value: copper_roughnessMap },
+    metalnessMap:	{ type: "t", value: copper_metalnessMap },
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
+  };
+
+  uniforms_copper.pointLightPosition.value = new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+
+  uniforms_copper.clight.value = new THREE.Vector3(
+    lightParameters.red   * lightParameters.intensity,
+    lightParameters.green * lightParameters.intensity,
+    lightParameters.blue  * lightParameters.intensity
+  );
+
+  copperMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_copper,
+    vertexShader:   vs_texture,
+    fragmentShader: fs_texture,
+    side : THREE.DoubleSide,
+  });
+
+  // leatherMaterial
+  uniforms_leather = {
+    normalMap:	  { type: "t", value: leather_normalMap },
+    diffuseMap:	  { type: "t", value: leather_diffuseMap },
+    roughnessMap:	{ type: "t", value: leather_roughnessMap },
+    metalnessMap:	{ type: "t", value: leather_metalnessMap },
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
+  };
+
+  uniforms_leather.pointLightPosition.value = new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+
+  uniforms_leather.clight.value = new THREE.Vector3(
+    lightParameters.red   * lightParameters.intensity,
+    lightParameters.green * lightParameters.intensity,
+    lightParameters.blue  * lightParameters.intensity
+  );
+
+  leatherMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_leather,
+    vertexShader:   vs_texture,
+    fragmentShader: fs_texture,
+    side : THREE.DoubleSide,
+  });
+
+  // goldMaterial
+  uniforms_gold = {
+    normalMap:	  { type: "t", value: gold_normalMap },
+    diffuseMap:	  { type: "t", value: gold_diffuseMap },
+    roughnessMap:	{ type: "t", value: gold_roughnessMap },
+    metalnessMap:	{ type: "t", value: gold_metalnessMap },
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
+  };
+
+  uniforms_gold.pointLightPosition.value = new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+
+  uniforms_gold.clight.value = new THREE.Vector3(
+    lightParameters.red   * lightParameters.intensity,
+    lightParameters.green * lightParameters.intensity,
+    lightParameters.blue  * lightParameters.intensity
+  );
+
+  goldMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_gold,
+    vertexShader:   vs_texture,
+    fragmentShader: fs_texture,
+    side : THREE.DoubleSide,
+  });
+
+
+  // metalMaterial
+  uniforms_metal = {
+    normalMap:	  { type: "t", value: metal_normalMap },
+    diffuseMap:	  { type: "t", value: metal_diffuseMap },
+    roughnessMap:	{ type: "t", value: metal_roughnessMap },
+    metalnessMap:	{ type: "t", value: metal_metalnessMap },
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
+  };
+
+  uniforms_metal.pointLightPosition.value = new THREE.Vector3(
+    lightMesh.position.x,
+    lightMesh.position.y,
+    lightMesh.position.z
+  );
+
+  uniforms_metal.clight.value = new THREE.Vector3(
+    lightParameters.red   * lightParameters.intensity,
+    lightParameters.green * lightParameters.intensity,
+    lightParameters.blue  * lightParameters.intensity
+  );
+
+  metalMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_metal,
+    vertexShader:   vs_texture,
+    fragmentShader: fs_texture,
+    side : THREE.DoubleSide,
+  });
+
 
   // Load and show the model
   var helmet = loadModel(modelNames.HELMET);

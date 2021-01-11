@@ -122,11 +122,21 @@ function loadModel(modelName) {
 
                 local_material = textureMaterial;
                 if (
-                  //helmet_components.NASAL == mesh_num
                   helmet_components.VISOR_UPPER == mesh_num ||
                   helmet_components.VISOR_LOWER == mesh_num
                 ) {
-                  local_material = normalsMaterial;
+                  //local_material = normalsMaterial;
+                  //local_material = copperMaterial;
+                  local_material = goldMaterial;
+                }
+                //if ( helmet_components.CALOTTE == mesh_num) {
+                //  local_material = copperMaterial;
+                //}
+                if (
+                  helmet_components.CHEEK_PAD_RIGHT == mesh_num ||
+                  helmet_components.CHEEK_PAD_LEFT == mesh_num
+                ) {
+                  local_material = leatherMaterial;
                 }
                 local_mesh = new THREE.Mesh(
                   local_geometry,
@@ -144,6 +154,8 @@ function loadModel(modelName) {
                 //scene.add(local_mesh);
                 helmet.add(local_mesh);
 
+                //console.log( helmet_ids2components[mesh_num])
+                //console.log(mesh_num)
                 mesh_num++;
                 //console.log("------------------------")
               }
@@ -174,7 +186,8 @@ function loadTexture(file) {
   var texture = new THREE.TextureLoader().load( file , function ( texture ) {
 
     texture.minFilter = THREE.LinearMipMapLinearFilter;
-    texture.anisotropy = renderer.getMaxAnisotropy();
+    //texture.anisotropy = renderer.getMaxAnisotropy();
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set( 0, 0 );
     texture.needsUpdate = true;
@@ -195,7 +208,7 @@ function showCheekPads(show=true, helmet=DEBUG_helmet) {
   ];
 
   comps.forEach( c => {
-    helmet.getChildByName(c).visible = show;
+    helmet.getObjectByName(c).visible = show;
   })
 
   render();
@@ -209,12 +222,10 @@ function showLeather(show=true, helmet=DEBUG_helmet) {
     helmet_components_names.CONNECTOR_LEFT,
     helmet_components_names.CONNECTOR_RIGHT
   ];
-  console.log(comps);
 
   comps.forEach( c => {
-    helmet.getChildByName(c).visible = show;
+    helmet.getObjectByName(c).visible = show;
   })
 
   render();
 }
-

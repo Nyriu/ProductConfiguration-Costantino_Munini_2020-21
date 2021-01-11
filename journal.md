@@ -28,4 +28,9 @@
 * Aggiunto semplice gui per modificare modello (solo show/hide di mesh al momento)
 * TODO pulizia
 * TODO fix riflesso interno calotta
+
+## 07/01
+* TODO Env Map
 * TODO creare materiali
+* TODO Click on model events
+

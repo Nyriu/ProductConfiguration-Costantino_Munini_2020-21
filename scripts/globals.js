@@ -77,9 +77,9 @@ const matParams_redPlastic = {
 var materialParameters = matParams_redPlastic
 
 
-var uniforms_default;
-var uniforms_texture;
-var uniforms_normals;
+var uniforms_default; // TODO remove from globals
+var uniforms_texture; // TODO remove from globals
+var uniforms_normals; // TODO remove from globals
 //var uniforms = uniforms_default; // TODO remove
 
 
