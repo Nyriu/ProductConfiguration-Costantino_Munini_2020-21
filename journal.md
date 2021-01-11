@@ -30,7 +30,8 @@
 * TODO fix riflesso interno calotta
 
 ## 07/01
-* TODO Env Map
-* TODO creare materiali
-* TODO Click on model events
+* creati vari materiali
+
+## 11/01
+* Materiali cambiabili da gui
 

@@ -141,6 +141,7 @@ showLeather(true);
 
 function rescaleUVs(uv_bufAttr) {
   // Not perfect but gets the job done
+  // more or less...
   const in_arr = uv_bufAttr.array;
   min_x = min_y = Infinity;
   max_x = max_y = -Infinity;

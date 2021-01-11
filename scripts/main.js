@@ -30,26 +30,11 @@ var specularMap;
 var roughnessMap;
 
 
-//var loaderPromise = new Promise((resolve, reject) => {
-//  normalMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
-//  normalMap.flipY = false;
-//  //normalMap.encoding = THREE.sRGBEncoding;
-//
-//  diffuseMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
-//  diffuseMap.flipY = false;
-//  diffuseMap.encoding = THREE.sRGBEncoding;
-//
-//  roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
-//  roughnessMap.flipY = false;
-//  //roughnessMap.encoding = THREE.sRGBEncoding;
-//
-//  metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
-//  metalnessMap.flipY = false;
-//  //metalnessMap.encoding = THREE.sRGBEncoding;
-//  resolve(true);
-//})
-
+// TODO move to utility
 var loaderPromise = new Promise((resolve, reject) => {
+  // here we loads all the textures
+  // TODO must split
+
   // DEFAULT HELMET MAPS
   normalMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
   normalMap.flipY = false;
@@ -96,8 +81,11 @@ var loaderPromise = new Promise((resolve, reject) => {
   leather_normalMap    = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Normal.jpg");
   leather_diffuseMap   = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Albedo.jpg");
   leather_roughnessMap = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Roughness.jpg");
-  leather_metalnessMap = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/Metalness.png");
-  leather_diffuseMap.encoding = THREE.sRGBEncoding;
+  //leather_metalnessMap = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/Metalness.png");
+  //leather_diffuseMap.encoding = THREE.sRGBEncoding;
+  leather_normalMap.flipY = false;
+  leather_diffuseMap.flipY = false;
+  leather_roughnessMap.flipY = false;
 
   // GOLD MAPS
   gold_normalMap    = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Normal.jpg");
@@ -108,8 +96,22 @@ var loaderPromise = new Promise((resolve, reject) => {
   gold_metalnessMap = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Metalness.jpg");
   gold_diffuseMap.encoding = THREE.sRGBEncoding;
 
+  //// FUR MAPS
+  // TODO add fur
+  //fur_normalMap    = loadTexture("../materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_Normal.jpg");
+  //fur_diffuseMap   =
+  //  loadTexture("../materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_Albedo.jpg");
+  //  
+  //fur_roughnessMap =
+  //  loadTexture("../materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_Roughness.jpg");
+  //fur_metalnessMap =
+  //  loadTexture("../materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_.jpg");
+  //fur_diffuseMap.encoding = THREE.sRGBEncoding;
+
+
   // METAL MAPS
   // bad bad bad
+  // TODO remove
   metal_normalMap    = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Normal.jpg");
   metal_diffuseMap   = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Albedo.jpg");
   metal_roughnessMap = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Roughness.jpg");
@@ -119,6 +121,7 @@ var loaderPromise = new Promise((resolve, reject) => {
   resolve(true);
 })
 .then(() => {
+  materials_loaded = true; // notify globally 
   // DEFAULT HELMET MAPS
   // textureMaterial
   uniforms_texture = {
@@ -215,7 +218,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalMap:	  { type: "t", value: leather_normalMap },
     diffuseMap:	  { type: "t", value: leather_diffuseMap },
     roughnessMap:	{ type: "t", value: leather_roughnessMap },
-    metalnessMap:	{ type: "t", value: leather_metalnessMap },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
@@ -235,8 +237,8 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   leatherMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_leather,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
+    vertexShader:   vs_dielectric,
+    fragmentShader: fs_dielectric,
     side : THREE.DoubleSide,
   });
 
@@ -302,8 +304,10 @@ var loaderPromise = new Promise((resolve, reject) => {
   });
 
 
+  update_name2mat();
+
   // Load and show the model
-  var helmet = loadModel(modelNames.HELMET);
+  helmet = loadModel(modelNames.HELMET);
   //noCheekPads(helmet);
 });
 
@@ -397,6 +401,21 @@ function clearGui() {
 
 
 
+const helmet_materials_list = [ // TODO
+  "default",
+  "gold",
+  "copper",
+  "leather",
+  "normals",
+];
+
+var helmetParameters_materials = { // TODO
+  "visor_upper_mat" : helmet_materials_list[0],
+  "visor_lower_mat" : helmet_materials_list[0],
+  "cheek_pads"      : helmet_materials_list[0],
+  "neck_roll"       : helmet_materials_list[0],
+}
+
 function buildGui() {
 
 	clearGui();
@@ -417,19 +436,69 @@ function buildGui() {
       showCheekPads(newVal);
     });
 
+	materialSettings = gui.addFolder('Helmet Materials settings');
+  materialSettings.add(helmetParameters_materials,
+    'visor_upper_mat', helmet_materials_list )
+    .name('Upper Visor Material').listen()
+    .onChange(
+      newVal => {
+        changeComponentMaterial(
+          helmet_components_names.VISOR_UPPER,
+          newVal
+        )});
+  materialSettings.add(helmetParameters_materials,
+    'visor_lower_mat', helmet_materials_list )
+    .name('Lower Visor Material').listen()
+    .onChange(
+      newVal => {
+        changeComponentMaterial(
+          helmet_components_names.VISOR_LOWER,
+          newVal
+        )});
+  materialSettings.add(helmetParameters_materials,
+    'cheek_pads', helmet_materials_list )
+    .name('Cheek Pads Material').listen()
+    .onChange(
+      newVal => {
+        changeComponentMaterial(
+          helmet_components_names.CHEEK_PAD_LEFT,
+          newVal);
+        changeComponentMaterial(
+          helmet_components_names.CHEEK_PAD_RIGHT,
+          newVal);
+      });
+  materialSettings.add(helmetParameters_materials,
+    'neck_roll', helmet_materials_list )
+    .name('Neck Roll Material').listen()
+    .onChange(
+      newVal => {
+        changeComponentMaterial(
+          helmet_components_names.NECK_ROLL,
+          newVal);
+      });
 
-  // TODO update to modify materials
-	//materialSettings = gui.addFolder('material settings');
-	//materialSettings.add(materialParameters,'cdiff_red').min(0).max(1).onChange( function(newVal) { render() });
-	//materialSettings.add(materialParameters,'cdiff_green').min(0).max(1).onChange( function(newVal) { render() });
-	//materialSettings.add(materialParameters,'cdiff_blue').min(0).max(1).onChange( function(newVal) { render() });
-	//materialSettings.add(materialParameters,'cspec_red').min(0).max(1).onChange( function(newVal) { render() });
-	//materialSettings.add(materialParameters,'cspec_green').min(0).max(1).onChange( function(newVal) { render() });
-	//materialSettings.add(materialParameters,'cspec_blue').min(0).max(1).onChange( function(newVal) { render() });
-	//materialSettings.add(materialParameters,'roughness').min(0).max(1).onChange( function(newVal) { render() });
+  gui.add(uvRepeat, "uv_repeat").min(0.1).max(5)
+    .name("UV Repeat")
+    .onChange( function(newVal) {
+      uniforms_gold.textureRepeat.value.set(newVal, newVal);
+      uniforms_copper.textureRepeat.value.set(newVal, newVal);
+      //uniforms_texture.textureRepeat.value.set(newVal, newVal);
+      uniforms_leather.textureRepeat.value.set(newVal, newVal);
+      render();
+    });
+
 }
 
+var uvRepeat = { 
+  "uv_repeat" : 1.0,
+}
+
+
+
+
 function updateUniforms() {
+  // TODO for every material
+  // TODO IMPORTANTE
 		uniforms.cspec.value = new THREE.Vector3(
       materialParameters.cspec_red,
       materialParameters.cspec_green,
@@ -446,6 +515,7 @@ function updateUniforms() {
 		    lightParameters.green * lightParameters.intensity,
 				lightParameters.blue * lightParameters.intensity
     );
+  // TODO update uniform to rescale textures?
 }
 
 init();

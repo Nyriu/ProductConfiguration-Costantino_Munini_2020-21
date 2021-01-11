@@ -121,23 +121,24 @@ function loadModel(modelName) {
                 //local_geometry.center();
 
                 local_material = textureMaterial;
-                if (
-                  helmet_components.VISOR_UPPER == mesh_num ||
-                  helmet_components.VISOR_LOWER == mesh_num
-                ) {
-                  //local_material = normalsMaterial;
-                  //local_material = copperMaterial;
-                  local_material = goldMaterial;
-                }
-                //if ( helmet_components.CALOTTE == mesh_num) {
-                //  local_material = copperMaterial;
+
+                //if (
+                //  helmet_components.VISOR_UPPER == mesh_num ||
+                //  helmet_components.VISOR_LOWER == mesh_num
+                //) {
+                //  //local_material = normalsMaterial;
+                //  //local_material = copperMaterial;
+                //  local_material = goldMaterial;
                 //}
-                if (
-                  helmet_components.CHEEK_PAD_RIGHT == mesh_num ||
-                  helmet_components.CHEEK_PAD_LEFT == mesh_num
-                ) {
-                  local_material = leatherMaterial;
-                }
+                ////if ( helmet_components.CALOTTE == mesh_num) {
+                ////  local_material = copperMaterial;
+                ////}
+                //if (
+                //  helmet_components.CHEEK_PAD_RIGHT == mesh_num ||
+                //  helmet_components.CHEEK_PAD_LEFT == mesh_num
+                //) {
+                //  local_material = leatherMaterial;
+                //}
                 local_mesh = new THREE.Mesh(
                   local_geometry,
                   local_material
@@ -189,7 +190,7 @@ function loadTexture(file) {
     //texture.anisotropy = renderer.getMaxAnisotropy();
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.offset.set( 0, 0 );
+    texture.offset.set( 0, 0 ); // inutile tanto non viene usato nello shader
     texture.needsUpdate = true;
     render();
   } )
@@ -229,3 +230,46 @@ function showLeather(show=true, helmet=DEBUG_helmet) {
 
   render();
 }
+
+
+
+function update_name2mat() {
+  // TODO can be better: controls
+  mat_name2mat = {
+    //"default" : defaultMaterial,
+    //"texture" : textureMaterial,
+    "default" : textureMaterial,
+    "gold"    : goldMaterial,
+    "copper"  : copperMaterial,
+    "metal"   : metalMaterial,
+    "leather" : leatherMaterial,
+    "fur"     : furMaterial,
+    "normals" : normalsMaterial,
+  };
+}
+
+
+// TODO below materials changers
+function changeComponentMaterial(comp_name, mat_name) {
+  if (!materials_loaded) {
+    throw new Error("Materials not ready yet!");
+  }
+  if (! comp_name in helmet_components_names ) {
+    throw new Error("Unknown component: " + comp_name);
+  }
+  if (! mat_name in mat_name2mat ) {
+    throw new Error("Unknown material: " + comp_name);
+  }
+
+  console.log(mat_name); // DEBUG
+  console.log( mat_name2mat[mat_name] ); // DEBUG
+
+  // TODO check on undefined IMPORTANT
+
+  component = helmet.getObjectByName(comp_name);
+  component.material = mat_name2mat[mat_name];
+  component.material.needsUpdate = true;
+
+  render();
+};
+

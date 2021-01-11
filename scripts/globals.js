@@ -55,9 +55,12 @@ var lightParameters = {
 
 
 
-// MATERIALs
+// MATERIALs STUFF
+materials_loaded = false; // true iff all materials have been loaded
+
 
 // RED PLASTIC
+// TODO remove
 const matParams_redPlastic = {
   cdiff_red: 0.7,
   cdiff_green: 0.0,
@@ -67,7 +70,6 @@ const matParams_redPlastic = {
   cspec_blue: 0.04,
   roughness: 0.3
 }
-
 
 // GLOBAL VARs
 //var geometry;
@@ -86,10 +88,32 @@ var uniforms_normals; // TODO remove from globals
 //var vs;
 //var fs;
 
+
+// All Sahder Materials
 var defaultMaterial;
 var textureMaterial;
 var normalsMaterial;
+var copperMaterial;
+var leatherMaterial;
+var furMaterial;
+var goldMaterial;
 
+
+var helmet;
+
+
+// CHANGABLE HELMET SETTINGS
+// const helmet_materials_list = [ // TODO copy from main
+//   "default",
+//   "gold",
+// 
+// ];
+
+var mat_name2mat; // dict string to material shader
+
+///var helmetParameters_materials = { // TODO copy from main
+///  show_leather   : true,
+///}
 
 
 // DEBUG STUFF
