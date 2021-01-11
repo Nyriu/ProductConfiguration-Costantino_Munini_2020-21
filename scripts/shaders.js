@@ -171,9 +171,7 @@ void main() {
 `
 
 
-
 // ------- NORMALS MATERIAL ------- //
-
 const vs_normals =
 `
 attribute vec4 tangent;
@@ -262,3 +260,170 @@ void main() {
 }
 `
 
+
+// ------- GLOSSY REFLECTION MAPPING ------- //
+const vs_glossy =
+`
+precision highp float;
+precision highp int;
+attribute vec4 tangent;
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vPosition;
+varying vec2 vUv;
+
+void main() {
+  vec4 vPos = modelViewMatrix * vec4( position, 1.0 );
+  vPosition = vPos.xyz;
+  vNormal = normalize(normalMatrix * normal);
+  vec3 objectTangent = vec3( tangent.xyz );
+  vec3 transformedTangent = normalMatrix * objectTangent;
+  vTangent = normalize( transformedTangent );
+  vBitangent = normalize( cross( vNormal, vTangent ) * tangent.w );
+  vUv = uv;
+  gl_Position = projectionMatrix * vPos;
+}
+`
+
+const fs_glossy =
+`
+precision highp float;
+precision highp int;
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vPosition;
+varying vec2 vUv;
+uniform vec3 cspec;
+uniform sampler2D normalMap;
+uniform samplerCube envMap;
+uniform vec2 normalScale;
+uniform float roughness;
+
+const float PI = 3.14159;
+#define saturate(a) clamp( a, 0.0, 1.0 )
+
+float pow2( const in float x ) { return x*x; }
+
+float getSpecularMIPLevel( const in float roughness, const in int maxMIPLevel ) {
+
+  float maxMIPLevelScalar = float( maxMIPLevel );
+
+  float sigma = PI * roughness * roughness / ( 1.0 + roughness );
+  float desiredMIPLevel = maxMIPLevelScalar + log2( sigma );
+
+  // clamp to allowable LOD ranges.
+  return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );
+
+}
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+  return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+}
+
+vec3 BRDF_Specular_GGX_Environment( const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float roughness ) {
+
+  float dotNV = saturate( dot( normal, viewDir ) );
+
+  const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
+
+  const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
+
+  vec4 r = roughness * c0 + c1;
+
+  float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
+
+  vec2 brdf = vec2( -1.04, 1.04 ) * a004 + r.zw;
+
+  return specularColor * brdf.x + brdf.y;
+}
+
+void main() {
+  vec3 normal = normalize( vNormal );
+  vec3 tangent = normalize( vTangent );
+  vec3 bitangent = normalize( vBitangent );
+  mat3 vTBN = mat3( tangent, bitangent, normal );
+  vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;
+  mapN.xy = normalScale * mapN.xy;
+  vec3 n = normalize( vTBN * mapN );
+  vec3 v = normalize( -vPosition);
+  vec3 vReflect = reflect(vPosition,n);
+  vec3 r = inverseTransformDirection( vReflect, viewMatrix );
+
+  float alpha = roughness * roughness;
+  float specularMIPLevel = getSpecularMIPLevel(alpha,8 );
+
+  vec3 envLight = textureCubeLodEXT( envMap, vec3(-r.x, r.yz), specularMIPLevel ).rgb;
+  // texture in sRGB, linearize
+  envLight = pow( envLight, vec3(2.2));
+  vec3 outRadiance = envLight*BRDF_Specular_GGX_Environment(n, v, cspec, alpha);
+  // gamma encode the final value
+  gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
+  //gl_FragColor = vec4(r,1.0);
+}
+`
+
+// ------- Pre-filtered EM with diffuse BRDF ------- //
+const vs_iem =
+`
+attribute vec4 tangent;
+varying vec3 vNormal;
+varying vec3 vPosition;
+varying vec3 wPosition;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec2 vUv;
+
+void main() {
+  vec4 vPos = modelViewMatrix * vec4( position, 1.0 );
+  vPosition = vPos.xyz;
+  wPosition = (modelMatrix * vec4( position, 1.0 )).xyz;
+  vNormal = normalize(normalMatrix * normal);
+  vec3 objectTangent = vec3( tangent.xyz );
+  vec3 transformedTangent = normalMatrix * objectTangent;
+  vTangent = normalize( transformedTangent );
+  vBitangent = normalize( cross( vNormal, vTangent ) * tangent.w );
+  vUv = uv;
+  gl_Position = projectionMatrix * vPos;
+}
+`
+
+const fs_iem =
+`
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vPosition;
+varying vec3 wPosition;
+varying vec2 vUv;
+vec3 cdiff;
+uniform sampler2D diffuseMap;
+uniform sampler2D normalMap;
+uniform samplerCube irradianceMap;
+uniform vec2 normalScale;
+const float PI = 3.14159;
+uniform vec2 textureRepeat;
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+  return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+}
+
+void main() {
+  vec3 normal = normalize( vNormal );
+  vec3 tangent = normalize( vTangent );
+  vec3 bitangent = normalize( vBitangent );
+  mat3 vTBN = mat3( tangent, bitangent, normal );
+  vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;
+  mapN.xy = normalScale * mapN.xy;
+  vec3 n = normalize( vTBN * mapN );
+  vec3 v = normalize( -vPosition);
+  vec3 worldN = inverseTransformDirection( n, viewMatrix );
+
+  vec3 irradiance = textureCube( irradianceMap, worldN).rgb;
+  cdiff = texture2D( diffuseMap, vUv  *textureRepeat).rgb;
+  irradiance = pow( irradiance, vec3(2.2));
+  vec3 outRadiance = cdiff*irradiance;
+  gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
+}
+`
