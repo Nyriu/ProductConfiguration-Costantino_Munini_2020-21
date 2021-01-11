@@ -12,14 +12,21 @@ var lightMesh = new THREE.Mesh(
   }));
 lightMesh.position.set( 7.0, 7.0, 7.0 );
 
+// EM //
+var cubeMapForesta = loadCubeMap("foresta");
+var irradianceForesta = loadCubeMap("irradianceForesta");
+
+scene.background = cubeMapForesta;
 
 // UNIFORMs //
 uniforms_default = {
   cspec:	{ type: "v3", value: new THREE.Vector3() },
   cdiff:	{ type: "v3", value: new THREE.Vector3() },
-  roughness: {type: "f", value: 0.5},
+  roughness: {type: "f", value: 0.5 },
   pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
   clight:	{ type: "v3", value: new THREE.Vector3() },
+  envMap: { type: "t", value: cubeMapForesta },
+  irradianceMap:  { type: "t", value: irradianceForesta }
 };
 uniforms = uniforms_default;
 
@@ -124,6 +131,8 @@ var loaderPromise = new Promise((resolve, reject) => {
   materials_loaded = true; // notify globally 
   // DEFAULT HELMET MAPS
   // textureMaterial
+  console.log(cubeMapForesta)
+  console.log(irradianceForesta)
   uniforms_texture = {
     normalMap:	  { type: "t", value: normalMap },
     diffuseMap:	  { type: "t", value: diffuseMap },
@@ -131,7 +140,9 @@ var loaderPromise = new Promise((resolve, reject) => {
     metalnessMap:	{ type: "t", value: metalnessMap },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }, // TODO scegliere meglio
+    envMap: { type: "t", value: cubeMapForesta },
+    irradianceMap:  { type: "t", value: irradianceForesta }
   };
 
   uniforms_texture.pointLightPosition.value = new THREE.Vector3(
