@@ -1,11 +1,3 @@
-// ENUMs
-const modelNames = {
-  TORUS : "TorusKnot",
-  SPHERE : "Sphere",
-  OLD_HELMET : "old_VikingHelmet",
-  HELMET : "VikingHelmet",
-}
-
 const helmet_components = {
   "CENTER" : 0, // Obj3D Sphere
 
@@ -56,69 +48,57 @@ var lightParameters = {
 
 
 // MATERIALs STUFF
-materials_loaded = false; // true iff all materials have been loaded
-
-
-// RED PLASTIC
-// TODO remove
-const matParams_redPlastic = {
-  cdiff_red: 0.7,
-  cdiff_green: 0.0,
-  cdiff_blue: 0.0,
-  cspec_red: 0.04,
-  cspec_green: 0.04,
-  cspec_blue: 0.04,
-  roughness: 0.3
-}
-
-// GLOBAL VARs
-//var geometry;
-//var material;
-//var mesh;
-
-var materialParameters = matParams_redPlastic
-
-
-var uniforms_default; // TODO remove from globals
-var uniforms_texture; // TODO remove from globals
-var uniforms_normals; // TODO remove from globals
-//var uniforms = uniforms_default; // TODO remove
-
-
-//var vs;
-//var fs;
-
+materials_loaded = false; // true iff all materials have been loaded // TODO really needed?
 
 // All Sahder Materials
-var defaultMaterial;
-var textureMaterial;
-var normalsMaterial;
+var textureMaterial; // default
+
+var goldMaterial;
 var copperMaterial;
 var brassMaterial;
 var bronzeMaterial;
+
 var leather0Material;
 var leather1Material;
 var furMaterial;
-var goldMaterial;
+
+var normalsMaterial;
+
+
 
 
 var helmet;
 
 
+
 // CHANGABLE HELMET SETTINGS
-// const helmet_materials_list = [ // TODO copy from main
-//   "default",
-//   "gold",
-// 
-// ];
-
 var mat_name2mat; // dict string to material shader
+const helmet_materials_list = [ // TODO move to globals
+  "default",
 
-///var helmetParameters_materials = { // TODO copy from main
-///  show_leather   : true,
-///}
+  "gold",
+  "copper",
+  "brass",
+  "bronze",
+
+  "leather0",
+  "leather1",
+  "fur",
+
+  "normals",
+];
+
+var helmetParameters_materials = { // TODO move to globals
+  "visor_upper_mat" : helmet_materials_list[0],
+  "visor_lower_mat" : helmet_materials_list[0],
+  "cheek_pads"      : helmet_materials_list[0],
+  "neck_roll"       : helmet_materials_list[0],
+}
 
 
+
+
+// TODO REMOVE BELOW
 // DEBUG STUFF
 var DEBUG_tmp;
 var DEBUG_helmet;

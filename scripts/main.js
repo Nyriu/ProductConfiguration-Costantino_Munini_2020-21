@@ -18,47 +18,22 @@ var irradianceForesta = loadCubeMap("irradianceForesta");
 
 scene.background = cubeMapForesta;
 
-// UNIFORMs //
-uniforms_default = {
-  cspec:	{ type: "v3", value: new THREE.Vector3() },
-  cdiff:	{ type: "v3", value: new THREE.Vector3() },
-  roughness: {type: "f", value: 0.5 },
-  pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-  clight:	{ type: "v3", value: new THREE.Vector3() },
-  envMap: { type: "t", value: cubeMapForesta },
-  irradianceMap:  { type: "t", value: irradianceForesta }
-};
-uniforms = uniforms_default;
-
-//// TODO move promise in utility.js
-
-var diffuseMap;
-var specularMap;
-var roughnessMap;
-
 
 // TODO move to utility
 var loaderPromise = new Promise((resolve, reject) => {
   // here we loads all the textures
-  // TODO must split
+  // TODO split in different loaders?
 
   // DEFAULT HELMET MAPS
-  normalMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
-  normalMap.flipY = false;
-  //normalMap.encoding = THREE.sRGBEncoding;
-
-  diffuseMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
-  diffuseMap.flipY = false;
-  diffuseMap.encoding = THREE.sRGBEncoding;
-
+  normalMap    = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
+  diffuseMap   = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
   roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
-  roughnessMap.flipY = false;
-  //roughnessMap.encoding = THREE.sRGBEncoding;
-
   metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
+  normalMap   .flipY = false;
+  diffuseMap  .flipY = false;
+  roughnessMap.flipY = false;
   metalnessMap.flipY = false;
-  //metalnessMap.encoding = THREE.sRGBEncoding;
-
+  diffuseMap.encoding = THREE.sRGBEncoding;
 
   // COPPER MAPS
   copper_normalMap    = loadTexture("materials/copper/cross_brushed_copper_normal.png");
@@ -82,45 +57,34 @@ var loaderPromise = new Promise((resolve, reject) => {
   bronze_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // LEATHERs MAPS
-  leather0_normalMap    = loadTexture("materials/leather/leather_bull_Normal.png");
-  leather0_diffuseMap   = loadTexture("materials/leather/leather_bull_Base_Color.png");
-  leather0_roughnessMap = loadTexture("materials/leather/leather_bull_Roughness.png");
+  // 0
+  leather0_normalMap    = loadTexture("materials/leather0/leather_bull_Normal.png");
+  leather0_diffuseMap   = loadTexture("materials/leather0/leather_bull_Base_Color.png");
+  leather0_roughnessMap = loadTexture("materials/leather0/leather_bull_Roughness.png");
   leather0_diffuseMap.encoding = THREE.sRGBEncoding;
-
-  leather1_normalMap    = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Normal.jpg");
-  leather1_diffuseMap   = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Albedo.jpg");
-  leather1_roughnessMap = loadTexture("materials/Fabric_Leather_oizt3np0_2K_surface_ms/oizt3np_2K_Roughness.jpg");
+  // 1
+  leather1_normalMap    = loadTexture("materials/leather1/oizt3np_2K_Normal.jpg");
+  leather1_diffuseMap   = loadTexture("materials/leather1/oizt3np_2K_Albedo.jpg");
+  leather1_roughnessMap = loadTexture("materials/leather1/oizt3np_2K_Roughness.jpg");
   leather1_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // GOLD MAPS
-  gold_normalMap    = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Normal.jpg");
-  gold_diffuseMap   = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Albedo.jpg");
-  gold_roughnessMap = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Roughness.jpg");
-  //gold_roughnessMap = loadTexture("materials/Imperfections_uh4obimc_2K_surface_ms/uh4obimc_2K_Roughness.jpg");
-  //gold_roughnessMap = loadTexture("materials/Imperfections_Grunge_tedxadjc_2K_surface_ms/tedxadjc_2K_Roughness.jpg");
-  gold_metalnessMap = loadTexture("materials/Metal_Pure_schvfgwp_2K_surface_ms/schvfgwp_2K_Metalness.jpg");
+  gold_normalMap    = loadTexture("materials/gold/schvfgwp_2K_Normal.jpg");
+  gold_diffuseMap   = loadTexture("materials/gold/schvfgwp_2K_Albedo.jpg");
+  gold_roughnessMap = loadTexture("materials/gold/schvfgwp_2K_Roughness.jpg");
+  gold_metalnessMap = loadTexture("materials/gold/schvfgwp_2K_Metalness.jpg");
   gold_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // FUR MAPS
-  fur_normalMap    = loadTexture("materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_Normal.jpg");
-  fur_diffuseMap   = loadTexture("materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_Albedo.jpg");
-  fur_roughnessMap = loadTexture("materials/Creature_Fur_rlsu3wp0_2K_surface_ms/rlsu3wp_2K_Roughness.jpg");
+  fur_normalMap    = loadTexture("materials/fur/rlsu3wp_2K_Normal.jpg");
+  fur_diffuseMap   = loadTexture("materials/fur/rlsu3wp_2K_Albedo.jpg");
+  fur_roughnessMap = loadTexture("materials/fur/rlsu3wp_2K_Roughness.jpg");
   fur_diffuseMap.encoding = THREE.sRGBEncoding;
-
-
-  // METAL MAPS
-  // bad bad bad
-  // TODO remove
-  metal_normalMap    = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Normal.jpg");
-  metal_diffuseMap   = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Albedo.jpg");
-  metal_roughnessMap = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/tgtldcqaw_2K_Roughness.jpg");
-  metal_metalnessMap = loadTexture("materials/Metal_Misc_tgtldcqaw_2K_surface_ms/Metalness.jpg");
-  metal_diffuseMap.encoding = THREE.sRGBEncoding;
 
   resolve(true);
 })
 .then(() => {
-  materials_loaded = true; // notify globally 
+  materials_loaded = true; // notify globally  // TODO useful?
   // DEFAULT HELMET MAPS
   // textureMaterial
   console.log(cubeMapForesta)
@@ -132,36 +96,25 @@ var loaderPromise = new Promise((resolve, reject) => {
     metalnessMap:	{ type: "t", value: metalnessMap },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) }, // TODO scegliere meglio
-    normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
-    roughness: {type: "f", value: 0.2}, // TODO REMOVE
-    cspec:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) }, // TODO REMOVE
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
+    normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
+    roughness: {type: "f", value: 0.2}, // TODO REMOVE // old EM and IEM
+    cspec:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) }, // TODO REMOVE // old EM and IEM
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta }
   };
-
-  uniforms_texture.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_texture.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
 
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
     vertexShader:   vs_texture,
     fragmentShader: fs_texture,
-    //vertexShader: vs_glossy ,
-    //fragmentShader: fs_glossy,
-    //vertexShader: vs_iem ,
-    //fragmentShader: fs_iem,
+    //vertexShader: vs_glossy ,  // TODO REMOVE
+    //fragmentShader: fs_glossy, // TODO REMOVE
+    //vertexShader: vs_iem ,     // TODO REMOVE
+    //fragmentShader: fs_iem,    // TODO REMOVE
     side : THREE.DoubleSide,
   });
+
 
   // normalsMaterial
   uniforms_normals = {
@@ -174,24 +127,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
   };
 
-  uniforms_normals.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_normals.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
   normalsMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_normals,
     vertexShader:   vs_normals,
     fragmentShader: fs_normals,
     side : THREE.DoubleSide,
   });
+
 
   // copperMaterial
   uniforms_copper = {
@@ -204,24 +146,14 @@ var loaderPromise = new Promise((resolve, reject) => {
     textureRepeat: { type: "v2", value: new THREE.Vector2(6.5, 6.5) }
   };
 
-  uniforms_copper.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_copper.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
   copperMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_copper,
     vertexShader:   vs_texture,
     fragmentShader: fs_texture,
     side : THREE.DoubleSide,
   });
+
+
 
   // brassMaterial
   uniforms_brass = {
@@ -234,24 +166,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     textureRepeat: { type: "v2", value: new THREE.Vector2(4,4) }
   };
 
-  uniforms_brass.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_brass.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
   brassMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_brass,
     vertexShader:   vs_texture,
     fragmentShader: fs_texture,
     side : THREE.DoubleSide,
   });
+
 
   // bronzeMaterial
   uniforms_bronze = {
@@ -264,24 +185,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     textureRepeat: { type: "v2", value: new THREE.Vector2(4,4) }
   };
 
-  uniforms_bronze.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_bronze.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
   bronzeMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_bronze,
     vertexShader:   vs_texture,
     fragmentShader: fs_texture,
     side : THREE.DoubleSide,
   });
+
 
   // leathersMaterial
   // 0
@@ -293,18 +203,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     textureRepeat: { type: "v2", value: new THREE.Vector2(7.6,7.6) }
   };
-
-  uniforms_leather0.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_leather0.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
 
   leather0Material = new THREE.ShaderMaterial({
     uniforms: uniforms_leather0,
@@ -321,18 +219,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     textureRepeat: { type: "v2", value: new THREE.Vector2(7.6,7.6) }
   };
-
-  uniforms_leather1.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_leather1.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
 
   leather1Material = new THREE.ShaderMaterial({
     uniforms: uniforms_leather1,
@@ -353,18 +239,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     textureRepeat: { type: "v2", value: new THREE.Vector2(8,8) }
   };
 
-  uniforms_gold.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_gold.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
   goldMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_gold,
     vertexShader:   vs_texture,
@@ -383,18 +257,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     // TODO sarebbe da aggiungere rotazione?
   };
 
-  uniforms_fur.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_fur.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
   furMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_fur,
     vertexShader:   vs_dielectric,
@@ -403,64 +265,42 @@ var loaderPromise = new Promise((resolve, reject) => {
   });
 
 
-  // metalMaterial
-  uniforms_metal = {
-    normalMap:	  { type: "t", value: metal_normalMap },
-    diffuseMap:	  { type: "t", value: metal_diffuseMap },
-    roughnessMap:	{ type: "t", value: metal_roughnessMap },
-    metalnessMap:	{ type: "t", value: metal_metalnessMap },
-    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-    clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) } // TODO scegliere meglio
-  };
+  uniforms_texture.pointLightPosition.value =
+  uniforms_gold  .pointLightPosition.value =
+  uniforms_copper.pointLightPosition.value =
+  uniforms_brass .pointLightPosition.value =
+  uniforms_bronze.pointLightPosition.value =
+  uniforms_leather0.pointLightPosition.value =
+  uniforms_leather1.pointLightPosition.value =
+  uniforms_fur     .pointLightPosition.value =
+  uniforms_normals.pointLightPosition.value =
+    new THREE.Vector3(
+      lightMesh.position.x,
+      lightMesh.position.y,
+      lightMesh.position.z
+    );
 
-  uniforms_metal.pointLightPosition.value = new THREE.Vector3(
-    lightMesh.position.x,
-    lightMesh.position.y,
-    lightMesh.position.z
-  );
-
-  uniforms_metal.clight.value = new THREE.Vector3(
-    lightParameters.red   * lightParameters.intensity,
-    lightParameters.green * lightParameters.intensity,
-    lightParameters.blue  * lightParameters.intensity
-  );
-
-  metalMaterial = new THREE.ShaderMaterial({
-    uniforms: uniforms_metal,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
-    side : THREE.DoubleSide,
-  });
+  uniforms_texture.clight.value =
+  uniforms_gold  .clight.value =
+  uniforms_copper.clight.value =
+  uniforms_brass .clight.value =
+  uniforms_bronze.clight.value =
+  uniforms_leather0.clight.value =
+  uniforms_leather1.clight.value =
+  uniforms_fur     .clight.value =
+  uniforms_normals.clight.value =
+    new THREE.Vector3(
+      lightParameters.red   * lightParameters.intensity,
+      lightParameters.green * lightParameters.intensity,
+      lightParameters.blue  * lightParameters.intensity
+    );
 
 
+  // update a dictonary to access materials with strings
   update_name2mat();
 
   // Load and show the model
-  helmet = loadModel(modelNames.HELMET);
-  //noCheekPads(helmet);
-});
-
-uniforms_default.pointLightPosition.value = 
-new THREE.Vector3(
-  lightMesh.position.x,
-  lightMesh.position.y,
-  lightMesh.position.z
-);
-
-uniforms_default.clight.value = new THREE.Vector3(
-  lightParameters.red   * lightParameters.intensity,
-  lightParameters.green * lightParameters.intensity,
-  lightParameters.blue  * lightParameters.intensity
-);
-
-
-// MATERIALs //
-defaultMaterial = new THREE.ShaderMaterial({
-  uniforms: uniforms_default,
-  vertexShader:   vs_default,
-  fragmentShader: fs_default,
-  side : THREE.DoubleSide,
+  helmet = loadModel();
 });
 
 
@@ -478,7 +318,6 @@ function init() {
   camera.position.set( 1.3287146680718807, -0.6371460764972972, 0.918281954038343);
   camera.rotation.set( 0.6065836757257353, 0.8714509908129087, -0.4881194964406582);
   scene.add( camera );
-
   
   scene.add(lightMesh);
 
@@ -529,26 +368,6 @@ function clearGui() {
 	gui.open();
 }
 
-
-
-const helmet_materials_list = [ // TODO move to globals
-  "default",
-  "gold",
-  "fur",
-  "copper",
-  "brass",
-  "bronze",
-  "leather0",
-  "leather1",
-  "normals",
-];
-
-var helmetParameters_materials = { // TODO move to globals
-  "visor_upper_mat" : helmet_materials_list[0],
-  "visor_lower_mat" : helmet_materials_list[0],
-  "cheek_pads"      : helmet_materials_list[0],
-  "neck_roll"       : helmet_materials_list[0],
-}
 
 function buildGui() {
 
@@ -637,22 +456,22 @@ var uvRepeat = {
 function updateUniforms() {
   // TODO for every material
   // TODO IMPORTANTE
-		uniforms.cspec.value = new THREE.Vector3(
-      materialParameters.cspec_red,
-      materialParameters.cspec_green,
-      materialParameters.cspec_blue
-    );
-		uniforms.cdiff.value = new THREE.Vector3(
-      materialParameters.cdiff_red,
-					materialParameters.cdiff_green,
-      materialParameters.cdiff_blue
-    );
-		uniforms.roughness.value = materialParameters.roughness>0.0?materialParameters.roughness:0.01;
-		uniforms.clight.value = new THREE.Vector3(
-				lightParameters.red * lightParameters.intensity,
-		    lightParameters.green * lightParameters.intensity,
-				lightParameters.blue * lightParameters.intensity
-    );
+  //uniforms.cspec.value = new THREE.Vector3(
+  //  materialParameters.cspec_red,
+  //  materialParameters.cspec_green,
+  //  materialParameters.cspec_blue
+  //);
+  //uniforms.cdiff.value = new THREE.Vector3(
+  //  materialParameters.cdiff_red,
+  //  materialParameters.cdiff_green,
+  //  materialParameters.cdiff_blue
+  //);
+  //uniforms.roughness.value = materialParameters.roughness>0.0?materialParameters.roughness:0.01;
+  //uniforms.clight.value = new THREE.Vector3(
+  //  lightParameters.red * lightParameters.intensity,
+  //  lightParameters.green * lightParameters.intensity,
+  //  lightParameters.blue * lightParameters.intensity
+  //);
   // TODO update uniform to rescale textures?
 }
 

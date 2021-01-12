@@ -1,6 +1,6 @@
 *.zip
 screens/*
-materials/*
+materials_bckp/*
 *screen*
 *.sbsar
 *.orig

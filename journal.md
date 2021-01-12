@@ -34,4 +34,9 @@
 
 ## 11/01
 * Materiali cambiabili da gui
+* Aggiunte EM e IEM
 
+## 12/01
+* Correzione Repeat dei materiali
+* Pulizia generale del codice
+* TODO AO on fur?
