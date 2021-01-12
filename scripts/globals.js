@@ -94,7 +94,10 @@ var defaultMaterial;
 var textureMaterial;
 var normalsMaterial;
 var copperMaterial;
-var leatherMaterial;
+var brassMaterial;
+var bronzeMaterial;
+var leather0Material;
+var leather1Material;
 var furMaterial;
 var goldMaterial;
 

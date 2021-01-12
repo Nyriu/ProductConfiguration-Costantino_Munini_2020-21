@@ -3,3 +3,4 @@ screens/*
 materials/*
 *screen*
 *.sbsar
+*.orig

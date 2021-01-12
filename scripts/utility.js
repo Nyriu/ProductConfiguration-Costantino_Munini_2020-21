@@ -122,23 +122,6 @@ function loadModel(modelName) {
 
                 local_material = textureMaterial;
 
-                //if (
-                //  helmet_components.VISOR_UPPER == mesh_num ||
-                //  helmet_components.VISOR_LOWER == mesh_num
-                //) {
-                //  //local_material = normalsMaterial;
-                //  //local_material = copperMaterial;
-                //  local_material = goldMaterial;
-                //}
-                ////if ( helmet_components.CALOTTE == mesh_num) {
-                ////  local_material = copperMaterial;
-                ////}
-                //if (
-                //  helmet_components.CHEEK_PAD_RIGHT == mesh_num ||
-                //  helmet_components.CHEEK_PAD_LEFT == mesh_num
-                //) {
-                //  local_material = leatherMaterial;
-                //}
                 local_mesh = new THREE.Mesh(
                   local_geometry,
                   local_material
@@ -252,9 +235,13 @@ function update_name2mat() {
     //"texture" : textureMaterial,
     "default" : textureMaterial,
     "gold"    : goldMaterial,
+    "fur"    : furMaterial,
     "copper"  : copperMaterial,
+    "brass"   : brassMaterial,
+    "bronze"  : bronzeMaterial,
     "metal"   : metalMaterial,
-    "leather" : leatherMaterial,
+    "leather0" : leather0Material,
+    "leather1" : leather1Material,
     "fur"     : furMaterial,
     "normals" : normalsMaterial,
   };
