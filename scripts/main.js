@@ -87,8 +87,6 @@ var loaderPromise = new Promise((resolve, reject) => {
   materials_loaded = true; // notify globally  // TODO useful?
   // DEFAULT HELMET MAPS
   // textureMaterial
-  console.log(cubeMapForesta)
-  console.log(irradianceForesta)
   uniforms_texture = {
     normalMap:	  { type: "t", value: normalMap },
     diffuseMap:	  { type: "t", value: diffuseMap },
@@ -98,18 +96,16 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
-    roughness: {type: "f", value: 0.2}, // TODO REMOVE // old EM and IEM
-    cspec:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) }, // TODO REMOVE // old EM and IEM
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta }
   };
 
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
-    //vertexShader: vs_glossy ,  // TODO REMOVE
-    //fragmentShader: fs_glossy, // TODO REMOVE
+    // vertexShader:   vs_texture,
+    // fragmentShader: fs_texture,
+    vertexShader: vs_glossy ,  // TODO REMOVE
+    fragmentShader: fs_glossy, // TODO REMOVE
     //vertexShader: vs_iem ,     // TODO REMOVE
     //fragmentShader: fs_iem,    // TODO REMOVE
     side : THREE.DoubleSide,
