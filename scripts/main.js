@@ -14,7 +14,10 @@ lightMesh.position.set( 7.0, 7.0, 7.0 );
 
 // EM //
 var cubeMapForesta = loadCubeMap("foresta");
+cubeMapForesta.encoding = THREE.sRGBEncoding;
+
 var irradianceForesta = loadCubeMap("irradianceForesta2");
+irradianceForesta.encoding = THREE.sRGBEncoding;
 
 scene.background = cubeMapForesta;
 
@@ -100,15 +103,15 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) }
+    ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesità 2
   };
 
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
     // vertexShader:   vs_texture,
     // fragmentShader: fs_texture,
-    vertexShader: vs_glossy ,  // TODO REMOVE
-    fragmentShader: fs_glossy, // TODO REMOVE
+    vertexShader: vs_default ,  // TODO REMOVE
+    fragmentShader: fs_default, // TODO REMOVE
     //vertexShader: vs_iem ,     // TODO REMOVE
     //fragmentShader: fs_iem,    // TODO REMOVE
     side : THREE.DoubleSide,

@@ -302,7 +302,7 @@ void main() {
 `
 
 // ------- GLOSSY REFLECTION MAPPING ------- //
-const vs_glossy =
+const vs_default =
 `
 precision highp float;
 precision highp int;
@@ -327,7 +327,7 @@ void main() {
 }
 `
 
-const fs_glossy =
+const fs_default =
 `
 precision highp float;
 precision highp int;
@@ -357,9 +357,9 @@ float roughness;
 
 float pow2( const in float x ) { return x*x; }
 
-float getSpecularMIPLevel( const in float roughness, const in int maxMIPLevel ) {
+float getSpecularMIPLevel( const in float roughness, const in float maxMIPLevel ) {
 
-  float maxMIPLevelScalar = float( maxMIPLevel );
+  float maxMIPLevelScalar = maxMIPLevel;
 
   float sigma = PI * roughness * roughness / ( 1.0 + roughness );
   float desiredMIPLevel = maxMIPLevelScalar + log2( sigma );
@@ -441,7 +441,8 @@ void main() {
   roughness = texture2D( roughnessMap, vUv*textureRepeat).r; // no need to linearize roughness map
 
   float alpha = roughness * roughness;
-  float specularMIPLevel = getSpecularMIPLevel(alpha, 16);
+  
+  float specularMIPLevel = getSpecularMIPLevel(alpha, 8.0 * (2.0 - metalness));
   vec3 fresnel = FSchlick(vDoth, cspec);
 
   vec3 irradiance = textureCube(irradianceMap, worldN).rgb;
@@ -451,7 +452,7 @@ void main() {
   envLight = pow( envLight, vec3(2.2));
   vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/
     (4.0*nDotl*nDotv);
-  vec3 outRadiance = ambientLight * cdiff * texture2D(aoMap, vUv * textureRepeat).xyz + cdiff * irradiance * ambientLight + envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha) * ambientLight + PI * clight * nDotl * BRDF * ambientLight;
+  vec3 outRadiance = cdiff * irradiance * (roughness) + envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha) * ambientLight * (1.0 - roughness) + PI * clight * nDotl * BRDF * ambientLight ; // ambientLight * cdiff * texture2D(aoMap, vUv * textureRepeat).xyz + 
   // gamma encode the final value
   gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
   //gl_FragColor = vec4(r,1.0);
