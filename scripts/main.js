@@ -14,7 +14,7 @@ lightMesh.position.set( 7.0, 7.0, 7.0 );
 
 // EM //
 var cubeMapForesta = loadCubeMap("foresta");
-var irradianceForesta = loadCubeMap("irradianceForesta");
+var irradianceForesta = loadCubeMap("irradianceForesta2");
 
 scene.background = cubeMapForesta;
 
@@ -29,6 +29,7 @@ var loaderPromise = new Promise((resolve, reject) => {
   diffuseMap   = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
   roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
   metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
+  occlusionMap = loadTexture("models/textures/internal_ground_ao_texture.jpeg");
   normalMap   .flipY = false;
   diffuseMap  .flipY = false;
   roughnessMap.flipY = false;
@@ -92,12 +93,14 @@ var loaderPromise = new Promise((resolve, reject) => {
     diffuseMap:	  { type: "t", value: diffuseMap },
     roughnessMap:	{ type: "t", value: roughnessMap },
     metalnessMap:	{ type: "t", value: metalnessMap },
+    aoMap: { type: "t", value: occlusionMap },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
     envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta }
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) }
   };
 
   textureMaterial = new THREE.ShaderMaterial({
