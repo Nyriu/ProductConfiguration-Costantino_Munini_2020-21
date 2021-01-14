@@ -59,18 +59,6 @@ var uniforms_bronze;
 var uniforms_leather0;
 var uniforms_leather1;
 var uniforms_fur;
-var uniforms_normals;
-
-var normalsMaterialParameters = {
-  cdiff_red:   0.5,
-  cdiff_green: 0.5,
-  cdiff_blue:  0.5,
-  cspec_red:   0.04,
-  cspec_green: 0.04,
-  cspec_blue:  0.04,
-  roughness: 0.2,
-}
-
 
 // All Sahder Materials
 var textureMaterial; // default
@@ -84,10 +72,6 @@ var leather0Material;
 var leather1Material;
 var furMaterial;
 
-var normalsMaterial;
-var testMaterial;
-
-
 
 
 var helmet;
@@ -96,7 +80,7 @@ var helmet;
 
 // CHANGABLE HELMET SETTINGS
 var mat_name2mat; // dict string to material shader
-const helmet_materials_list = [ // TODO move to globals
+const helmet_materials_list = [
   "default",
 
   "gold",
@@ -107,27 +91,25 @@ const helmet_materials_list = [ // TODO move to globals
   "leather0",
   "leather1",
   "fur",
-
-  "normals",
+];
+const metallic_materials_list = [
+  "default",
+  "gold",
+  "copper",
+  "brass",
+  "bronze",
+];
+const dielectric_materials_list = [
+  "default",
+  "leather0",
+  "leather1",
+  "fur",
 ];
 
-var helmetParameters_materials = { // TODO move to globals
-  "visor_upper_mat" : helmet_materials_list[0],
-  "visor_lower_mat" : helmet_materials_list[0],
-  "cheek_pads"      : helmet_materials_list[0],
-  "neck_roll"       : helmet_materials_list[0],
+var helmetParameters_materials = {
+  "visor_upper_mat" : metallic_materials_list[0],
+  "visor_lower_mat" : metallic_materials_list[0],
+  "cheek_pads"      : dielectric_materials_list[0],
+  "neck_roll"       : dielectric_materials_list[0],
 }
-
-
-
-
-// TODO REMOVE BELOW
-// DEBUG STUFF
-var DEBUG_tmp;
-var DEBUG_helmet;
-var DEBUG_child;
-var DEBUG_mesh;
-var DEBUG_knot;
-var DEBUG_sphere;
-
 

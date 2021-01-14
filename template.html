@@ -68,7 +68,10 @@
         width: 30px;
         margin-left: 1.7rem;
       }
-      .loader {
+      #can {
+        display:none;
+      }
+      #loader {
         border: 16px solid #fbceaf; /* Light grey */
         border-top: 16px solid #ab2124; /* Blue */
         border-radius: 50%;
@@ -88,7 +91,7 @@
         padding: 5rem;
         height: 50rem;
       }
-      .up .model {
+      .up #model {
         flex-grow: 0.7;
         align-items: center;
         display: flex;
@@ -147,6 +150,23 @@
     </style>
   </head>
   <body>
+    <!-- LIBS -->
+		<script src="libs/three.js"></script>
+		<script src="libs/stats.min.js"></script>
+		<script src="libs/OrbitControls.js"></script>
+		<script src='libs/dat.gui.min.js'></script>
+		<script src='libs/GLTFLoader.js'></script>
+		<script src='libs/OBJLoader.js'></script>
+		<script src='libs/BufferGeometryUtils.js'></script>
+		<script src="libs/Coordinates.js"></script>
+
+    <!-- SCRIPTS -->
+		<script src="scripts/globals.js"></script>
+		<script src="scripts/utility.js"></script>
+		<script src="scripts/shaders.js"></script>
+    <!-- <script src="scripts/main.js"></script> -->
+
+
     <header>
       <div id="logo">
         <img src="/images/ACME-logo.jpg" alt="Logo ACME">
@@ -165,8 +185,11 @@
     </header>
     <main>
       <div class="up">
-        <div class="model">
-          <div class="loader"></div>
+        <div id="model">
+          <div id="loader"></div>
+          <div>
+            <script id="can" src="scripts/main.js"></script>
+          </div>
         </div>
         <div class="pannello">
           <h1>Elmo vichingo</h1>

@@ -1,7 +1,7 @@
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.outputEncoding = THREE.sRGBEncoding;
 
-var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.2, 1000 );
+var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
 var scene    = new THREE.Scene();
 
@@ -10,19 +10,51 @@ var lightMesh = new THREE.Mesh(
   new THREE.MeshBasicMaterial({
     color: 0xffff00, wireframe:true
   }));
-lightMesh.position.set( 7.0, 7.0, 7.0 );
+lightMesh.position.set( 4.0, 4.0, 7.0 );
+lightMesh.visible = false;
 
 // EM //
 var cubeMapForesta = loadCubeMap("foresta");
+var cubeMapFiume = loadCubeMap("fiume");
+var cubeMapCascata = loadCubeMap("cascata");
+var cubeMapNeve = loadCubeMap("neve");
 cubeMapForesta.encoding = THREE.sRGBEncoding;
+cubeMapFiume.encoding = THREE.sRGBEncoding;
+cubeMapCascata.encoding = THREE.sRGBEncoding;
+cubeMapNeve.encoding = THREE.sRGBEncoding;
 
-var irradianceForesta = loadCubeMap("irradianceForesta2");
+var irradianceForesta = loadCubeMap("irradianceForesta");
+var irradianceFiume = loadCubeMap("irradianceFiume");
+var irradianceCascata = loadCubeMap("irradianceCascata");
+var irradianceNeve = loadCubeMap("irradianceNeve");
 irradianceForesta.encoding = THREE.sRGBEncoding;
+irradianceFiume.encoding = THREE.sRGBEncoding;
+irradianceCascata.encoding = THREE.sRGBEncoding;
+irradianceNeve.encoding = THREE.sRGBEncoding;
 
-scene.background = cubeMapForesta;
+scene.background = cubeMapNeve;
 
 
-// TODO move to utility
+var environmentParameters = {
+  env : 'neve'
+}
+var env_list = [
+  "foresta",
+  "fiume"  ,
+  "cascata",
+  "neve"   ,
+];
+var env_name2env = {
+  "foresta" : [cubeMapForesta, irradianceForesta],
+  "fiume"   : [cubeMapFiume, irradianceFiume],
+  "cascata" : [cubeMapCascata, irradianceCascata],
+  "neve"    : [cubeMapNeve, irradianceNeve],
+};
+
+
+
+
+
 var loaderPromise = new Promise((resolve, reject) => {
   // here we loads all the textures
   // TODO split in different loaders?
@@ -90,7 +122,6 @@ var loaderPromise = new Promise((resolve, reject) => {
   resolve(true);
 })
 .then(() => {
-  materials_loaded = true; // notify globally  // TODO useful?
   // DEFAULT HELMET MAPS
   // textureMaterial
   uniforms_texture = {
@@ -101,88 +132,25 @@ var loaderPromise = new Promise((resolve, reject) => {
     metalnessMap:	{ type: "t", value: metalnessMap },
     //aoMap: { type: "t", value: occlusionMap },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
-    normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
-    invertTangentW: {value: 1.0}, // put 1 only when using helmet normalMaps, 0 otherwise
+    normalScale: { type: "v2", value: new THREE.Vector2(1,1) }, // TODO only used in EM and IEM
+    invertTangentW: { value: 1.0 }, // put 1 only when using helmet normalMaps, 0 otherwise
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
-    // vertexShader:   vs_texture,
-    // fragmentShader: fs_texture,
     vertexShader: vs_default,
     fragmentShader: fs_default,
     side : THREE.DoubleSide,
   });
 
-
-  // normalsMaterial
-  uniforms_normals = {
-    // Material specific
-    normalMap:	  { type: "t", value: normalMap },
-    cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
-    cdiff:	{ type: "v3", value: new THREE.Vector3(0.5,0.5,0.5) },
-    roughness: {type: "f", value: 0.2},
-    normalMap:	{ type: "t", value: normalMap},
-    normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
-
-    // Lights
-    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-    clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap: { type: "t", value: irradianceForesta },
-    //ambientLight:  { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) }, // Luce bianca di intesita' 0.5
-  };
-
-  normalsMaterial = new THREE.ShaderMaterial({
-    uniforms: uniforms_normals,
-    vertexShader:   vs_normals,
-    fragmentShader: fs_normals,
-    side : THREE.DoubleSide,
-  });
-
-
-  // TEST MAPS // TODO REMOVE
-  // testMaterial
-  uniforms_test = {
-    // Material specific
-    normalMap:	  { type: "t", value: normalMap },
-    diffuseMap:	  { type: "t", value: diffuseMap },
-    roughnessMap:	{ type: "t", value: roughnessMap },
-    metalnessMap:	{ type: "t", value: metalnessMap },
-    //aoMap: { type: "t", value: occlusionMap }, // TODO test
-    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
-    normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
-    
-    // Lights
-    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-    clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
-    //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) }, // Luce bianca di intesita' 2
-  };
-
-  testMaterial = new THREE.ShaderMaterial({
-    uniforms: uniforms_test,
-    vertexShader:   vs_test,
-    fragmentShader: fs_test,
-    //vertexShader: vs_default,
-    //fragmentShader: fs_default,
-    //uniforms: uniforms_normals,
-    //vertexShader:   vs_normals,
-    //afragmentShader: fs_normals,
-    side : THREE.DoubleSide,
-  });
-
-
-
+  //
   // copperMaterial
   uniforms_copper = {
     // Material specific
@@ -195,15 +163,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   copperMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_copper,
-    //vertexShader:   vs_texture,
-    //fragmentShader: fs_texture,
     vertexShader:   vs_default,
     fragmentShader: fs_default,
     side : THREE.DoubleSide,
@@ -223,15 +189,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   brassMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_brass,
-    //vertexShader:   vs_texture,
-    //fragmentShader: fs_texture,
     vertexShader: vs_default,
     fragmentShader: fs_default,
     side : THREE.DoubleSide,
@@ -250,15 +214,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   bronzeMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_bronze,
-    //vertexShader:   vs_texture,
-    //fragmentShader: fs_texture,
     vertexShader: vs_default,
     fragmentShader: fs_default,
     side : THREE.DoubleSide,
@@ -324,15 +286,13 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   goldMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_gold,
-    //vertexShader:   vs_texture,
-    //fragmentShader: fs_texture,
     vertexShader: vs_default,
     fragmentShader: fs_default,
     side : THREE.DoubleSide,
@@ -371,8 +331,6 @@ var loaderPromise = new Promise((resolve, reject) => {
   uniforms_leather0.pointLightPosition.value =
   uniforms_leather1.pointLightPosition.value =
   uniforms_fur     .pointLightPosition.value =
-  uniforms_normals.pointLightPosition.value =
-  uniforms_test.pointLightPosition.value =
     new THREE.Vector3(
       lightMesh.position.x,
       lightMesh.position.y,
@@ -387,21 +345,23 @@ var loaderPromise = new Promise((resolve, reject) => {
   uniforms_leather0.clight.value =
   uniforms_leather1.clight.value =
   uniforms_fur     .clight.value =
-  uniforms_normals.clight.value =
-  uniforms_test.clight.value =
     new THREE.Vector3(
       lightParameters.red   * lightParameters.intensity,
       lightParameters.green * lightParameters.intensity,
       lightParameters.blue  * lightParameters.intensity
     );
 
-
-
   // update a dictonary to access materials with strings
   update_name2mat();
 
   // Load and show the model
   helmet = loadModel();
+
+  // show canvas
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('can').style.display = 'block';
+
+  render();
 });
 
 
@@ -413,27 +373,27 @@ function init() {
 
   renderer.setClearColor( 0xf0f0f0 );
 
-  Coordinates.drawAllAxes();
+  //Coordinates.drawAllAxes();
 
   //camera.position.set( 0, 10, 10 );
-  camera.position.set( 1.3287146680718807, -0.6371460764972972, 0.918281954038343);
-  camera.rotation.set( 0.6065836757257353, 0.8714509908129087, -0.4881194964406582);
+  camera.position.set( 3.0125698739296674, -0.24927753550987475, 5.726534689706049 );
+  camera.rotation.set( 0.04350279482356695, 0.4838971371052188, -0.020248918756045297);
+
   scene.add( camera );
   
   scene.add(lightMesh);
 
-  document.body.appendChild( renderer.domElement );
+  document.getElementById("model").appendChild( renderer.domElement );
   renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setSize( window.innerWidth / 4, window.innerHeight / 4 );
 
   controls.addEventListener( 'change', render );
-  controls.minDistance = 1;
-  controls.maxDistance = 100;
-  //controls.maxPolarAngle = Math.PI / 2;
+  controls.minDistance = 3;
+  controls.maxDistance = 10;
+  controls.maxPolarAngle = 2;
+  controls.minPolarAngle = 1;
   controls.enablePan = false;
-  //controls.target.copy( mesh.position );
 
-  //controls.target = 
   controls.update();
 
   window.addEventListener( 'resize', onResize, false );
@@ -479,15 +439,11 @@ function buildGui() {
 	lightSettings.add(lightParameters,'blue').min(0).max(1).onChange( function(newVal) { render() });
 	lightSettings.add(lightParameters,'intensity').min(0).max(3).onChange( function(newVal) { render() });
 
-
-	normalsMaterialSettings = gui.addFolder('Normals Material Parameters');
-	normalsMaterialSettings.add(normalsMaterialParameters,'roughness').min(0.0).max(1.0).onChange( function(newVal) { render() });
-	normalsMaterialSettings.add(normalsMaterialParameters,'cdiff_red').min(0).max(1).onChange( function(newVal) { render() });
-	normalsMaterialSettings.add(normalsMaterialParameters,'cdiff_green').min(0).max(1).onChange( function(newVal) { render() });
-	normalsMaterialSettings.add(normalsMaterialParameters,'cdiff_blue').min(0).max(1).onChange( function(newVal) { render() });
-	normalsMaterialSettings.add(normalsMaterialParameters,'cspec_red').min(0).max(1).onChange( function(newVal) { render() });
-	normalsMaterialSettings.add(normalsMaterialParameters,'cspec_green').min(0).max(1).onChange( function(newVal) { render() });
-	normalsMaterialSettings.add(normalsMaterialParameters,'cspec_blue').min(0).max(1).onChange( function(newVal) { render() });
+	environmentSettings = gui.addFolder('Environment Parameters');
+	environmentSettings.add(environmentParameters, 'env', env_list).name('Environment').listen()
+    .onChange( function(newVal) {
+      changeEnvironment(newVal);
+    });
 
 
 	helmetSettings = gui.addFolder('Helmet settings');
@@ -503,7 +459,7 @@ function buildGui() {
 
 	materialSettings = gui.addFolder('Helmet Materials settings');
   materialSettings.add(helmetParameters_materials,
-    'visor_upper_mat', helmet_materials_list )
+    'visor_upper_mat', metallic_materials_list )
     .name('Upper Visor Material').listen()
     .onChange(
       newVal => {
@@ -512,7 +468,7 @@ function buildGui() {
           newVal
         )});
   materialSettings.add(helmetParameters_materials,
-    'visor_lower_mat', helmet_materials_list )
+    'visor_lower_mat', metallic_materials_list )
     .name('Lower Visor Material').listen()
     .onChange(
       newVal => {
@@ -521,7 +477,7 @@ function buildGui() {
           newVal
         )});
   materialSettings.add(helmetParameters_materials,
-    'cheek_pads', helmet_materials_list )
+    'cheek_pads', dielectric_materials_list )
     .name('Cheek Pads Material').listen()
     .onChange(
       newVal => {
@@ -533,7 +489,7 @@ function buildGui() {
           newVal);
       });
   materialSettings.add(helmetParameters_materials,
-    'neck_roll', helmet_materials_list )
+    'neck_roll', dielectric_materials_list )
     .name('Neck Roll Material').listen()
     .onChange(
       newVal => {
@@ -541,21 +497,6 @@ function buildGui() {
           helmet_components_names.NECK_ROLL,
           newVal);
       });
-
-  //// TODO REMOVE
-  //gui.add(uvRepeat, "uv_repeat").min(0.1).max(32)
-  //  .name("UV Repeat")
-  //  .onChange( function(newVal) {
-  //    //uniforms_gold.textureRepeat.value.set(newVal, newVal);    // DONE
-  //    //uniforms_fur.textureRepeat.value.set(newVal, newVal);     //DONE
-  //    //uniforms_copper.textureRepeat.value.set(newVal, newVal);  // DONE
-  //    //uniforms_brass.textureRepeat.value.set(newVal, newVal);   // DONE
-  //    //uniforms_bronze.textureRepeat.value.set(newVal, newVal);  // DONE
-  //    //uniforms_texture.textureRepeat.value.set(newVal, newVal); // DONE
-  //    //uniforms_leather0.textureRepeat.value.set(newVal, newVal);// DONE
-  //    //uniforms_leather1.textureRepeat.value.set(newVal, newVal);// DONE
-  //    render();
-  //  });
 
 }
 
@@ -575,9 +516,7 @@ function updateUniforms() {
     uniforms_bronze   != undefined &&
     uniforms_leather0 != undefined &&
     uniforms_leather1 != undefined &&
-    uniforms_fur      != undefined &&
-    uniforms_normals  != undefined &&
-    uniforms_test     != undefined
+    uniforms_fur      != undefined
   ) {
     uniforms_texture .clight.value =
       uniforms_gold    .clight.value =
@@ -587,34 +526,16 @@ function updateUniforms() {
       uniforms_leather0.clight.value =
       uniforms_leather1.clight.value =
       uniforms_fur     .clight.value =
-      uniforms_normals .clight.value =
-      uniforms_test    .clight.value =
       new THREE.Vector3(
         lightParameters.red   * lightParameters.intensity,
         lightParameters.green * lightParameters.intensity,
         lightParameters.blue  * lightParameters.intensity
       );
   }
-  if ( uniforms_normals  != undefined ) {
-    uniforms_normals.roughness.value =
-      normalsMaterialParameters.roughness;
-    uniforms_normals.cdiff.value =
-      new THREE.Vector3(
-        normalsMaterialParameters.cdiff_red  ,
-        normalsMaterialParameters.cdiff_green,
-        normalsMaterialParameters.cdiff_blue ,
-      );
-    uniforms_normals.cspec.value =
-      new THREE.Vector3(
-        normalsMaterialParameters.cspec_red  ,
-        normalsMaterialParameters.cspec_green,
-        normalsMaterialParameters.cspec_blue ,
-      );
-  }
 }
 
 init();
-buildGui();
+//buildGui();
 
 update();
 render();
