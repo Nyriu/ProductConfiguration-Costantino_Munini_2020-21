@@ -196,14 +196,17 @@ void main() {
 
   cspec = vec3(0.04);
 
-  //roughness = texture2D( roughnessMap, vUv*textureRepeat).r; // no need to linearize roughness map
   roughness = texture2D( roughnessMap, vUv*textureRepeat).r; // no need to linearize roughness map
 
   vec3 fresnel = FSchlick(vDoth, cspec);
   float alpha = roughness * roughness;
-  vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/
-    (4.0*nDotl*nDotv);
+  vec3 BRDF =
+    (vec3(1.0)-fresnel)*cdiff/PI +
+    fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/(4.0*nDotl*nDotv);
   vec3 outRadiance = PI* clight * nDotl * BRDF;
+
+  // TODO simplifyy formula (also above)
+
   // gamma encode the final value
   gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
 }
@@ -244,13 +247,24 @@ varying vec3 vBitangent;
 varying vec3 vPosition;
 varying vec2 vUv;
 uniform vec3 pointLightPosition; // in world space
+
 uniform vec3 clight;
 uniform vec3 cspec;
+//uniform vec3 ambientLight; // TODO REMOVE
+
 uniform vec3 cdiff;
 uniform float roughness;
 uniform sampler2D normalMap;
+
+uniform samplerCube irradianceMap;
+
 uniform vec2 normalScale;
 const float PI = 3.14159;
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+  return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+}
+
 
 vec3 FSchlick(float vDoth, vec3 f0) {
   return f0 + (vec3(1.0)-f0)*pow(1.0 - vDoth,5.0);
@@ -293,9 +307,27 @@ void main() {
   float nDotv = max(dot( n, v ),0.000001);
   vec3 fresnel = FSchlick(vDoth, cspec);
   float alpha = roughness * roughness;
-  vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/
-    (4.0*nDotl*nDotv);
-  vec3 outRadiance = PI* clight * nDotl * BRDF;
+
+
+  vec3 worldN = inverseTransformDirection( n, viewMatrix );
+  vec3 irradiance = textureCube(irradianceMap, worldN).rgb;
+  irradiance = pow( irradiance, vec3(2.2));
+
+  // TODO rimuovere commenti
+  //vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI;
+  //vec3 BRDF = fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/(4.0*nDotl*nDotv);
+
+  vec3 BRDF = 
+    (vec3(1.0)-fresnel)*cdiff/PI +
+    fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/(4.0*nDotl*nDotv);
+
+  //vec3 outRadiance = PI * clight * nDotl * BRDF;
+  //vec3 outRadiance = cdiff * irradiance;
+
+  vec3 outRadiance =
+    cdiff * irradiance            // Irradiance Env Map
+    + PI * clight * nDotl * BRDF; // Point Light
+
   // gamma encode the final value
   gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
 }
@@ -321,7 +353,7 @@ void main() {
   vec3 transformedTangent = normalMatrix * objectTangent;
   vTangent = normalize( transformedTangent );
   // w is 1 or -1 depending on the sign of det( M tangent )
-  vBitangent = normalize( cross( vNormal, vTangent ) * tangent.w );
+  vBitangent = normalize( cross( vNormal, vTangent ) * (-tangent.w) );
   vUv = uv;
   gl_Position = projectionMatrix * vPos;
 }

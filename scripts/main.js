@@ -103,7 +103,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesità 2
+    ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesita' 2
   };
 
   textureMaterial = new THREE.ShaderMaterial({
@@ -121,12 +121,15 @@ var loaderPromise = new Promise((resolve, reject) => {
   // normalsMaterial
   uniforms_normals = {
     cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
-    cdiff:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) },
+    //cdiff:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) },
+    cdiff:	{ type: "v3", value: new THREE.Vector3(0.5,0.5,0.5) },
     roughness: {type: "f", value: 0.2},
     normalMap:	{ type: "t", value: normalMap},
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
+    irradianceMap: { type: "t", value: irradianceForesta },
+    //ambientLight:  { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) } // Luce bianca di intesita' 0.5
   };
 
   normalsMaterial = new THREE.ShaderMaterial({
@@ -378,7 +381,18 @@ function buildGui() {
 	lightSettings.add(lightParameters,'red').min(0).max(1).onChange( function(newVal) { render() });
 	lightSettings.add(lightParameters,'green').min(0).max(1).onChange( function(newVal) { render() });
 	lightSettings.add(lightParameters,'blue').min(0).max(1).onChange( function(newVal) { render() });
-	lightSettings.add(lightParameters,'intensity').min(0).max(20).onChange( function(newVal) { render() });
+	lightSettings.add(lightParameters,'intensity').min(0).max(3).onChange( function(newVal) { render() });
+
+
+	normalsMaterialSettings = gui.addFolder('Normals Material Parameters');
+	normalsMaterialSettings.add(normalsMaterialParameters,'roughness').min(0.0).max(1.0).onChange( function(newVal) { render() });
+	normalsMaterialSettings.add(normalsMaterialParameters,'cdiff_red').min(0).max(1).onChange( function(newVal) { render() });
+	normalsMaterialSettings.add(normalsMaterialParameters,'cdiff_green').min(0).max(1).onChange( function(newVal) { render() });
+	normalsMaterialSettings.add(normalsMaterialParameters,'cdiff_blue').min(0).max(1).onChange( function(newVal) { render() });
+	normalsMaterialSettings.add(normalsMaterialParameters,'cspec_red').min(0).max(1).onChange( function(newVal) { render() });
+	normalsMaterialSettings.add(normalsMaterialParameters,'cspec_green').min(0).max(1).onChange( function(newVal) { render() });
+	normalsMaterialSettings.add(normalsMaterialParameters,'cspec_blue').min(0).max(1).onChange( function(newVal) { render() });
+
 
 	helmetSettings = gui.addFolder('Helmet settings');
   helmetSettings.add( helmetParameters_show, 'show_leather').name('Leather').listen()
@@ -432,19 +446,20 @@ function buildGui() {
           newVal);
       });
 
-  gui.add(uvRepeat, "uv_repeat").min(0.1).max(32)
-    .name("UV Repeat")
-    .onChange( function(newVal) {
-      //uniforms_gold.textureRepeat.value.set(newVal, newVal);    // DONE
-      //uniforms_fur.textureRepeat.value.set(newVal, newVal);     //DONE
-      //uniforms_copper.textureRepeat.value.set(newVal, newVal);  // DONE
-      //uniforms_brass.textureRepeat.value.set(newVal, newVal);   // DONE
-      //uniforms_bronze.textureRepeat.value.set(newVal, newVal);  // DONE
-      //uniforms_texture.textureRepeat.value.set(newVal, newVal); // DONE
-      //uniforms_leather0.textureRepeat.value.set(newVal, newVal);// DONE
-      //uniforms_leather1.textureRepeat.value.set(newVal, newVal);// DONE
-      render();
-    });
+  //// TODO REMOVE
+  //gui.add(uvRepeat, "uv_repeat").min(0.1).max(32)
+  //  .name("UV Repeat")
+  //  .onChange( function(newVal) {
+  //    //uniforms_gold.textureRepeat.value.set(newVal, newVal);    // DONE
+  //    //uniforms_fur.textureRepeat.value.set(newVal, newVal);     //DONE
+  //    //uniforms_copper.textureRepeat.value.set(newVal, newVal);  // DONE
+  //    //uniforms_brass.textureRepeat.value.set(newVal, newVal);   // DONE
+  //    //uniforms_bronze.textureRepeat.value.set(newVal, newVal);  // DONE
+  //    //uniforms_texture.textureRepeat.value.set(newVal, newVal); // DONE
+  //    //uniforms_leather0.textureRepeat.value.set(newVal, newVal);// DONE
+  //    //uniforms_leather1.textureRepeat.value.set(newVal, newVal);// DONE
+  //    render();
+  //  });
 
 }
 
@@ -456,25 +471,48 @@ var uvRepeat = {
 
 
 function updateUniforms() {
-  // TODO for every material
-  // TODO IMPORTANTE
-  //uniforms.cspec.value = new THREE.Vector3(
-  //  materialParameters.cspec_red,
-  //  materialParameters.cspec_green,
-  //  materialParameters.cspec_blue
-  //);
-  //uniforms.cdiff.value = new THREE.Vector3(
-  //  materialParameters.cdiff_red,
-  //  materialParameters.cdiff_green,
-  //  materialParameters.cdiff_blue
-  //);
-  //uniforms.roughness.value = materialParameters.roughness>0.0?materialParameters.roughness:0.01;
-  //uniforms.clight.value = new THREE.Vector3(
-  //  lightParameters.red * lightParameters.intensity,
-  //  lightParameters.green * lightParameters.intensity,
-  //  lightParameters.blue * lightParameters.intensity
-  //);
-  // TODO update uniform to rescale textures?
+  if (
+    uniforms_texture  != undefined &&
+    uniforms_gold     != undefined &&
+    uniforms_copper   != undefined &&
+    uniforms_brass    != undefined &&
+    uniforms_bronze   != undefined &&
+    uniforms_leather0 != undefined &&
+    uniforms_leather1 != undefined &&
+    uniforms_fur      != undefined &&
+    uniforms_normals  != undefined
+  ) {
+    uniforms_texture .clight.value =
+      uniforms_gold    .clight.value =
+      uniforms_copper  .clight.value =
+      uniforms_brass   .clight.value =
+      uniforms_bronze  .clight.value =
+      uniforms_leather0.clight.value =
+      uniforms_leather1.clight.value =
+      uniforms_fur     .clight.value =
+      uniforms_normals .clight.value =
+      new THREE.Vector3(
+        lightParameters.red   * lightParameters.intensity,
+        lightParameters.green * lightParameters.intensity,
+        lightParameters.blue  * lightParameters.intensity
+      );
+  }
+  if ( uniforms_normals  != undefined ) {
+    uniforms_normals.roughness.value =
+      normalsMaterialParameters.roughness;
+    uniforms_normals.cdiff.value =
+      new THREE.Vector3(
+        normalsMaterialParameters.cdiff_red  ,
+        normalsMaterialParameters.cdiff_green,
+        normalsMaterialParameters.cdiff_blue ,
+      );
+    uniforms_normals.cspec.value =
+      new THREE.Vector3(
+        normalsMaterialParameters.cspec_red  ,
+        normalsMaterialParameters.cspec_green,
+        normalsMaterialParameters.cspec_blue ,
+      );
+  }
 }
 
 init();

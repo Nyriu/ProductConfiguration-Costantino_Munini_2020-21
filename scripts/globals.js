@@ -50,6 +50,28 @@ var lightParameters = {
 // MATERIALs STUFF
 materials_loaded = false; // true iff all materials have been loaded // TODO really needed?
 
+
+var uniforms_texture; // default
+var uniforms_gold;
+var uniforms_copper;
+var uniforms_brass;
+var uniforms_bronze;
+var uniforms_leather0;
+var uniforms_leather1;
+var uniforms_fur;
+var uniforms_normals;
+
+var normalsMaterialParameters = {
+  cdiff_red:   0.5,
+  cdiff_green: 0.5,
+  cdiff_blue:  0.5,
+  cspec_red:   0.04,
+  cspec_green: 0.04,
+  cspec_blue:  0.04,
+  roughness: 0.2,
+}
+
+
 // All Sahder Materials
 var textureMaterial; // default
 
