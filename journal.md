@@ -39,4 +39,8 @@
 ## 12/01
 * Correzione Repeat dei materiali
 * Pulizia generale del codice
-* TODO AO on fur?
+
+
+## 14/01
+* Correzione errori in shaders
+* Integrazione con UI

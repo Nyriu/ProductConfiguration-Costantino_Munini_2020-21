@@ -24,7 +24,7 @@ function loadModel() {
             local_geometry = child.geometry;
             local_material = textureMaterial;
             //local_material = normalsMaterial; // TODO REMOVE
-            //local_material = normalsMaterial;
+            // local_material = furMaterial; // TODO REMOVE
 
             local_mesh = new THREE.Mesh(
               local_geometry,

@@ -32,12 +32,13 @@ var loaderPromise = new Promise((resolve, reject) => {
   diffuseMap   = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
   roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
   metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
-  occlusionMap = loadTexture("models/textures/internal_ground_ao_texture.jpeg");
+  //occlusionMap = loadTexture("models/textures/internal_ground_ao_texture.jpeg");
   normalMap   .flipY = false;
   diffuseMap  .flipY = false;
   roughnessMap.flipY = false;
   metalnessMap.flipY = false;
   // TODO provare a flippare la occlusion
+  // non cambia nulla perche' forse bisogna usare UV diversi
   diffuseMap.encoding = THREE.sRGBEncoding;
 
   // COPPER MAPS
@@ -93,45 +94,51 @@ var loaderPromise = new Promise((resolve, reject) => {
   // DEFAULT HELMET MAPS
   // textureMaterial
   uniforms_texture = {
+    // Material specific
     normalMap:	  { type: "t", value: normalMap },
     diffuseMap:	  { type: "t", value: diffuseMap },
     roughnessMap:	{ type: "t", value: roughnessMap },
     metalnessMap:	{ type: "t", value: metalnessMap },
-    aoMap: { type: "t", value: occlusionMap },
-    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-    clight:	{ type: "v3", value: new THREE.Vector3() },
+    //aoMap: { type: "t", value: occlusionMap },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
+    invertTangentW: {value: 1.0}, // put 1 only when using helmet normalMaps, 0 otherwise
+
+    // Lights
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesita' 2
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) } // Luce bianca di intesita' 2
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   textureMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_texture,
     // vertexShader:   vs_texture,
     // fragmentShader: fs_texture,
-    vertexShader: vs_default ,  // TODO REMOVE
-    fragmentShader: fs_default, // TODO REMOVE
-    //vertexShader: vs_iem ,     // TODO REMOVE
-    //fragmentShader: fs_iem,    // TODO REMOVE
+    vertexShader: vs_default,
+    fragmentShader: fs_default,
     side : THREE.DoubleSide,
   });
 
 
   // normalsMaterial
   uniforms_normals = {
+    // Material specific
+    normalMap:	  { type: "t", value: normalMap },
     cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
     cdiff:	{ type: "v3", value: new THREE.Vector3(0.5,0.5,0.5) },
     roughness: {type: "f", value: 0.2},
     normalMap:	{ type: "t", value: normalMap},
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
+
+    // Lights
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap: { type: "t", value: irradianceForesta },
-    //ambientLight:  { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) } // Luce bianca di intesita' 0.5
+    //ambientLight:  { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) }, // Luce bianca di intesita' 0.5
   };
 
   normalsMaterial = new THREE.ShaderMaterial({
@@ -142,28 +149,32 @@ var loaderPromise = new Promise((resolve, reject) => {
   });
 
 
-  // TEST MAPS
+  // TEST MAPS // TODO REMOVE
   // testMaterial
   uniforms_test = {
+    // Material specific
     normalMap:	  { type: "t", value: normalMap },
     diffuseMap:	  { type: "t", value: diffuseMap },
     roughnessMap:	{ type: "t", value: roughnessMap },
     metalnessMap:	{ type: "t", value: metalnessMap },
     //aoMap: { type: "t", value: occlusionMap }, // TODO test
-    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
-    clight:	{ type: "v3", value: new THREE.Vector3() },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
+    
+    // Lights
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesita' 2
+    //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) }, // Luce bianca di intesita' 2
   };
 
   testMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_test,
     vertexShader:   vs_test,
     fragmentShader: fs_test,
-
+    //vertexShader: vs_default,
+    //fragmentShader: fs_default,
     //uniforms: uniforms_normals,
     //vertexShader:   vs_normals,
     //afragmentShader: fs_normals,
@@ -174,19 +185,27 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   // copperMaterial
   uniforms_copper = {
+    // Material specific
     normalMap:	  { type: "t", value: copper_normalMap },
     diffuseMap:	  { type: "t", value: copper_diffuseMap },
     roughnessMap:	{ type: "t", value: copper_roughnessMap },
     metalnessMap:	{ type: "t", value: copper_metalnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(6.5, 6.5) },
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(6.5, 6.5) }
+    envMap: { type: "t", value: cubeMapForesta },
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   copperMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_copper,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
+    //vertexShader:   vs_texture,
+    //fragmentShader: fs_texture,
+    vertexShader:   vs_default,
+    fragmentShader: fs_default,
     side : THREE.DoubleSide,
   });
 
@@ -194,38 +213,54 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   // brassMaterial
   uniforms_brass = {
+    // Material specific
     normalMap:	  { type: "t", value: brass_normalMap },
     diffuseMap:	  { type: "t", value: brass_diffuseMap },
     roughnessMap:	{ type: "t", value: brass_roughnessMap },
     metalnessMap:	{ type: "t", value: brass_metalnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(4,4) },
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(4,4) }
+    envMap: { type: "t", value: cubeMapForesta },
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   brassMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_brass,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
+    //vertexShader:   vs_texture,
+    //fragmentShader: fs_texture,
+    vertexShader: vs_default,
+    fragmentShader: fs_default,
     side : THREE.DoubleSide,
   });
 
 
   // bronzeMaterial
   uniforms_bronze = {
+    // Material specific
     normalMap:	  { type: "t", value: bronze_normalMap },
     diffuseMap:	  { type: "t", value: bronze_diffuseMap },
     roughnessMap:	{ type: "t", value: bronze_roughnessMap },
     metalnessMap:	{ type: "t", value: bronze_metalnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(4,4) },
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(4,4) }
+    envMap: { type: "t", value: cubeMapForesta },
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   bronzeMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_bronze,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
+    //vertexShader:   vs_texture,
+    //fragmentShader: fs_texture,
+    vertexShader: vs_default,
+    fragmentShader: fs_default,
     side : THREE.DoubleSide,
   });
 
@@ -233,12 +268,18 @@ var loaderPromise = new Promise((resolve, reject) => {
   // leathersMaterial
   // 0
   uniforms_leather0 = {
+    // Material specific
     normalMap:	  { type: "t", value: leather0_normalMap },
     diffuseMap:	  { type: "t", value: leather0_diffuseMap },
     roughnessMap:	{ type: "t", value: leather0_roughnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(6.6,6.6) },
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(7.6,7.6) }
+    //envMap: { type: "t", value: cubeMapForesta }, // TODO REMOVE
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   leather0Material = new THREE.ShaderMaterial({
@@ -249,12 +290,18 @@ var loaderPromise = new Promise((resolve, reject) => {
   });
   // 1
   uniforms_leather1 = {
+    // Material specific
     normalMap:	  { type: "t", value: leather1_normalMap },
     diffuseMap:	  { type: "t", value: leather1_diffuseMap },
     roughnessMap:	{ type: "t", value: leather1_roughnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(7.6,7.6) },
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(7.6,7.6) }
+    //envMap: { type: "t", value: cubeMapForesta }, // TODO REMOVE
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   leather1Material = new THREE.ShaderMaterial({
@@ -267,31 +314,45 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   // goldMaterial
   uniforms_gold = {
+    // Material specific
     normalMap:	  { type: "t", value: gold_normalMap },
     diffuseMap:	  { type: "t", value: gold_diffuseMap },
     roughnessMap:	{ type: "t", value: gold_roughnessMap },
     metalnessMap:	{ type: "t", value: gold_metalnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(8,8) },
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(8,8) }
+    envMap: { type: "t", value: cubeMapForesta },
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   goldMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_gold,
-    vertexShader:   vs_texture,
-    fragmentShader: fs_texture,
+    //vertexShader:   vs_texture,
+    //fragmentShader: fs_texture,
+    vertexShader: vs_default,
+    fragmentShader: fs_default,
     side : THREE.DoubleSide,
   });
 
   // furMaterial
   uniforms_fur = {
+    // Material specific
     normalMap:	  { type: "t", value: fur_normalMap },
     diffuseMap:	  { type: "t", value: fur_diffuseMap },
     roughnessMap:	{ type: "t", value: fur_roughnessMap },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(9.5,9.5) },
+    // TODO sarebbe da aggiungere rotazione?
+
+    // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(9.5,9.5) }
-    // TODO sarebbe da aggiungere rotazione?
+    // envMap: { type: "t", value: cubeMapForesta },// TODO REMOVE
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
   furMaterial = new THREE.ShaderMaterial({
@@ -333,6 +394,7 @@ var loaderPromise = new Promise((resolve, reject) => {
       lightParameters.green * lightParameters.intensity,
       lightParameters.blue  * lightParameters.intensity
     );
+
 
 
   // update a dictonary to access materials with strings
