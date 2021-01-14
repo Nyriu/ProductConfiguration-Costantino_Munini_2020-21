@@ -14,12 +14,24 @@ lightMesh.position.set( 7.0, 7.0, 7.0 );
 
 // EM //
 var cubeMapForesta = loadCubeMap("foresta");
+var cubeMapFiume = loadCubeMap("fiume");
+var cubeMapCascata = loadCubeMap("cascata");
+var cubeMapNeve = loadCubeMap("neve");
 cubeMapForesta.encoding = THREE.sRGBEncoding;
+cubeMapFiume.encoding = THREE.sRGBEncoding;
+cubeMapCascata.encoding = THREE.sRGBEncoding;
+cubeMapNeve.encoding = THREE.sRGBEncoding;
 
-var irradianceForesta = loadCubeMap("irradianceForesta2");
+var irradianceForesta = loadCubeMap("irradianceForesta");
+var irradianceFiume = loadCubeMap("irradianceFiume");
+var irradianceCascata = loadCubeMap("irradianceCascata");
+var irradianceNeve = loadCubeMap("irradianceNeve");
 irradianceForesta.encoding = THREE.sRGBEncoding;
+irradianceFiume.encoding = THREE.sRGBEncoding;
+irradianceCascata.encoding = THREE.sRGBEncoding;
+irradianceNeve.encoding = THREE.sRGBEncoding;
 
-scene.background = cubeMapForesta;
+scene.background = cubeMapNeve;
 
 
 // TODO move to utility
@@ -101,14 +113,14 @@ var loaderPromise = new Promise((resolve, reject) => {
     metalnessMap:	{ type: "t", value: metalnessMap },
     //aoMap: { type: "t", value: occlusionMap },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
-    normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
-    invertTangentW: {value: 1.0}, // put 1 only when using helmet normalMaps, 0 otherwise
+    normalScale: { type: "v2", value: new THREE.Vector2(1,1) }, // TODO only used in EM and IEM
+    invertTangentW: { value: 1.0 }, // put 1 only when using helmet normalMaps, 0 otherwise
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
@@ -128,16 +140,16 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalMap:	  { type: "t", value: normalMap },
     cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
     cdiff:	{ type: "v3", value: new THREE.Vector3(0.5,0.5,0.5) },
-    roughness: {type: "f", value: 0.2},
-    normalMap:	{ type: "t", value: normalMap},
-    normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
+    roughness: { type: "f", value: 0.2 },
+    normalMap:	{ type: "t", value: normalMap },
+    normalScale: { type: "v2", value: new THREE.Vector2(1,1) },
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap: { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap: { type: "t", value: irradianceNeve },
     //ambientLight:  { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) }, // Luce bianca di intesita' 0.5
   };
 
@@ -164,8 +176,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) }, // Luce bianca di intesita' 2
   };
 
@@ -195,8 +207,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
@@ -223,8 +235,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
@@ -250,8 +262,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
@@ -277,8 +289,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    //envMap: { type: "t", value: cubeMapForesta }, // TODO REMOVE
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    //envMap: { type: "t", value: cubeMapNeve }, // TODO REMOVE
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
@@ -299,8 +311,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    //envMap: { type: "t", value: cubeMapForesta }, // TODO REMOVE
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    //envMap: { type: "t", value: cubeMapNeve }, // TODO REMOVE
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
@@ -324,8 +336,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
-    envMap: { type: "t", value: cubeMapForesta },
-    irradianceMap:  { type: "t", value: irradianceForesta },
+    envMap: { type: "t", value: cubeMapNeve },
+    irradianceMap:  { type: "t", value: irradianceNeve },
     ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
   };
 
