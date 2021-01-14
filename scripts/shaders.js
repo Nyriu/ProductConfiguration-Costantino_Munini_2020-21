@@ -97,8 +97,7 @@ void main() {
 
   vec3 fresnel = FSchlick(vDoth, cspec);
   float alpha = roughness * roughness;
-  vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/
-    (4.0*nDotl*nDotv);
+  vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/(4.0*nDotl*nDotv);
   vec3 outRadiance = PI* clight * nDotl * BRDF;
   // gamma encode the final value
   gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
@@ -213,8 +212,6 @@ void main() {
 `
 
 
-
-
 // ------- NORMALS MATERIAL ------- //
 const vs_normals =
 `
@@ -256,14 +253,48 @@ uniform vec3 cdiff;
 uniform float roughness;
 uniform sampler2D normalMap;
 
+uniform samplerCube envMap;
 uniform samplerCube irradianceMap;
 
 uniform vec2 normalScale;
 const float PI = 3.14159;
 
+
 vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
   return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
 }
+
+float getSpecularMIPLevel( const in float roughness, const in int maxMIPLevel ) {
+  float maxMIPLevelScalar = float( maxMIPLevel );
+
+  float sigma = PI * roughness * roughness / ( 1.0 + roughness );
+  float desiredMIPLevel = maxMIPLevelScalar + log2( sigma );
+
+  // clamp to allowable LOD ranges.
+  return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );
+
+}
+
+#define saturate(a) clamp( a, 0.0, 1.0 )
+
+// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile
+vec3 BRDF_Specular_GGX_Environment( const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float roughness ) {
+
+  float dotNV = saturate( dot( normal, viewDir ) );
+
+  const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
+
+  const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
+
+  vec4 r = roughness * c0 + c1;
+
+  float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
+
+  vec2 brdf = vec2( -1.04, 1.04 ) * a004 + r.zw;
+
+  return specularColor * brdf.x + brdf.y;
+
+} 
 
 
 vec3 FSchlick(float vDoth, vec3 f0) {
@@ -309,6 +340,16 @@ void main() {
   float alpha = roughness * roughness;
 
 
+	vec3 vReflect = reflect(vPosition,n);
+  vec3 r = inverseTransformDirection( vReflect, viewMatrix );
+
+  float specularMIPLevel = getSpecularMIPLevel(alpha,8 );
+
+  vec3 envLight = textureCubeLodEXT( envMap, vec3(-r.x, r.yz), specularMIPLevel ).rgb;
+  // texture in sRGB, linearize
+  envLight = pow( envLight, vec3(2.2));
+
+
   vec3 worldN = inverseTransformDirection( n, viewMatrix );
   vec3 irradiance = textureCube(irradianceMap, worldN).rgb;
   irradiance = pow( irradiance, vec3(2.2));
@@ -325,8 +366,192 @@ void main() {
   //vec3 outRadiance = cdiff * irradiance;
 
   vec3 outRadiance =
-    cdiff * irradiance            // Irradiance Env Map
-    + PI * clight * nDotl * BRDF; // Point Light
+    PI * clight * nDotl * BRDF +                                   // Point Light
+    envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha) + // Glossy Env Map
+    cdiff * irradiance;                                            // Irradiance Env Map
+
+  // gamma encode the final value
+  gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
+}
+`
+
+
+
+// ------- TEST MATERIAL ------- //
+const vs_test =
+`
+attribute vec4 tangent;
+varying vec3 vNormal;
+varying vec3 vPosition;
+varying vec2 vUv;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+
+void main() {
+  vec4 vPos = modelViewMatrix * vec4( position, 1.0 );
+  vPosition = vPos.xyz;
+  vNormal = normalize(normalMatrix * normal);
+  vec3 objectTangent = vec3( tangent.xyz );
+  vec3 transformedTangent = normalMatrix * objectTangent;
+  vTangent = normalize( transformedTangent );
+  // w is 1 or -1 depending on the sign of det( M tangent )
+  vBitangent = normalize( cross( vNormal, vTangent ) * (-tangent.w) );
+  vUv = uv;
+  gl_Position = projectionMatrix * vPos;
+}
+`
+
+const fs_test =
+`
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vPosition;
+varying vec2 vUv;
+uniform vec3 pointLightPosition; // in world space
+
+uniform vec3 clight;
+//uniform vec3 ambientLight; // TODO REMOVE
+
+vec3 cdiff;
+vec3 cspec;
+float roughness;
+float metalness;
+
+uniform sampler2D diffuseMap;
+uniform sampler2D metalnessMap;
+uniform sampler2D roughnessMap; 
+uniform sampler2D normalMap;
+
+uniform vec2 textureRepeat;
+
+
+uniform samplerCube envMap;
+uniform samplerCube irradianceMap;
+
+uniform vec2 normalScale;
+const float PI = 3.14159;
+
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+  return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+}
+
+float getSpecularMIPLevel( const in float roughness, const in int maxMIPLevel ) {
+  float maxMIPLevelScalar = float( maxMIPLevel );
+
+  float sigma = PI * roughness * roughness / ( 1.0 + roughness );
+  float desiredMIPLevel = maxMIPLevelScalar + log2( sigma );
+
+  // clamp to allowable LOD ranges.
+  return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );
+
+}
+
+#define saturate(a) clamp( a, 0.0, 1.0 )
+
+// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile
+vec3 BRDF_Specular_GGX_Environment( const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float roughness ) {
+
+  float dotNV = saturate( dot( normal, viewDir ) );
+
+  const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
+
+  const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
+
+  vec4 r = roughness * c0 + c1;
+
+  float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
+
+  vec2 brdf = vec2( -1.04, 1.04 ) * a004 + r.zw;
+
+  return specularColor * brdf.x + brdf.y;
+
+} 
+
+
+vec3 FSchlick(float vDoth, vec3 f0) {
+  return f0 + (vec3(1.0)-f0)*pow(1.0 - vDoth,5.0);
+}
+
+float DGGX(float NoH, float alpha) {
+  float alpha2 = alpha * alpha;
+  float k = NoH*NoH * (alpha2 - 1.0) + 1.0;
+  return alpha2 / (PI * k * k );
+}
+
+float G1(float nDotv, float alpha) {
+  float alpha2 = alpha*alpha;
+  return 2.0 * (nDotv / (nDotv + sqrt(alpha2 + (1.0-alpha2)*nDotv*nDotv )));
+}
+
+float GSmith(float nDotv, float nDotl, float alpha) {
+  return G1(nDotl,alpha)*G1(nDotv,alpha);
+}
+
+
+void main() {
+  vec4 lPosition = viewMatrix * vec4( pointLightPosition, 1.0 );
+  vec3 l = normalize(lPosition.xyz - vPosition.xyz);
+  vec3 normal = normalize( vNormal );
+  vec3 tangent = normalize( vTangent );
+  vec3 bitangent = normalize( vBitangent );
+  // matrix to convert bewtween tangent space and view space
+  mat3 vTBN = mat3( tangent, bitangent, normal );
+  //vec3 mapN = texture2D( normalMap, vUv*textureRepeat ).xyz * 2.0 - 1.0; // TODO
+  vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;
+  //mapN.xy = normalScale * mapN.xy;
+  vec3 n = normalize( vTBN * mapN );
+  vec3 v = normalize( -vPosition);
+  vec3 h = normalize( v + l);
+  // small quantity to prevent divisions by 0
+  float nDotl = max(dot( n, l ),0.000001);
+  float lDoth = max(dot( l, h ),0.000001);
+  float nDoth = max(dot( n, h ),0.000001);
+  float vDoth = max(dot( v, h ),0.000001);
+  float nDotv = max(dot( n, v ),0.000001);
+  vec3 fresnel = FSchlick(vDoth, cspec);
+  float alpha = roughness * roughness;
+
+  metalness = texture2D( metalnessMap, vUv*textureRepeat ).r;
+
+  cdiff = texture2D( diffuseMap, vUv*textureRepeat ).rgb;
+  cdiff = pow( cdiff, vec3(2.2)); // texture in sRGB, linearize
+
+  cspec = (1.0-metalness)*vec3(0.04) + metalness*cdiff;
+  cdiff = (1.0-metalness)*cdiff;
+  roughness = texture2D( roughnessMap, vUv*textureRepeat).r; // no need to linearize roughness map
+
+
+	vec3 vReflect = reflect(vPosition,n);
+  vec3 r = inverseTransformDirection( vReflect, viewMatrix );
+
+  float specularMIPLevel = getSpecularMIPLevel(alpha,8 );
+
+  vec3 envLight = textureCubeLodEXT( envMap, vec3(-r.x, r.yz), specularMIPLevel ).rgb;
+  // texture in sRGB, linearize
+  envLight = pow( envLight, vec3(2.2));
+
+
+  vec3 worldN = inverseTransformDirection( n, viewMatrix );
+  vec3 irradiance = textureCube(irradianceMap, worldN).rgb;
+  irradiance = pow( irradiance, vec3(2.2));
+
+  // TODO rimuovere commenti
+  //vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI;
+  //vec3 BRDF = fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/(4.0*nDotl*nDotv);
+
+  vec3 BRDF = 
+    (vec3(1.0)-fresnel)*cdiff/PI +
+    fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/(4.0*nDotl*nDotv);
+
+  //vec3 outRadiance = PI * clight * nDotl * BRDF;
+  //vec3 outRadiance = cdiff * irradiance;
+
+  vec3 outRadiance =
+    PI * clight * nDotl * BRDF +                                   // Point Light
+    metalness * envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha + 0.2) + // Glossy Env Map
+    cdiff * irradiance;                                            // Irradiance Env Map
 
   // gamma encode the final value
   gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
@@ -484,7 +709,14 @@ void main() {
   envLight = pow( envLight, vec3(2.2));
   vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/
     (4.0*nDotl*nDotv);
-  vec3 outRadiance = cdiff * irradiance * (roughness) + envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha) * ambientLight * (1.0 - roughness) + PI * clight * nDotl * BRDF * ambientLight ; // ambientLight * cdiff * texture2D(aoMap, vUv * textureRepeat).xyz + 
+
+  vec3 outRadiance =
+    cdiff * irradiance + // IEM
+    envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha) + // EM
+    PI * clight * nDotl * BRDF // pointLight
+    + ambientLight*cdiff
+    ;
+
   // gamma encode the final value
   gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
   //gl_FragColor = vec4(r,1.0);

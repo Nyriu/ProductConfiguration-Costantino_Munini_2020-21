@@ -85,6 +85,7 @@ var leather1Material;
 var furMaterial;
 
 var normalsMaterial;
+var testMaterial;
 
 
 

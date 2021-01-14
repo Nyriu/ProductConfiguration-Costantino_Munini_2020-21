@@ -37,6 +37,7 @@ var loaderPromise = new Promise((resolve, reject) => {
   diffuseMap  .flipY = false;
   roughnessMap.flipY = false;
   metalnessMap.flipY = false;
+  // TODO provare a flippare la occlusion
   diffuseMap.encoding = THREE.sRGBEncoding;
 
   // COPPER MAPS
@@ -103,7 +104,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesita' 2
+    //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesita' 2
+    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) } // Luce bianca di intesita' 2
   };
 
   textureMaterial = new THREE.ShaderMaterial({
@@ -121,13 +123,13 @@ var loaderPromise = new Promise((resolve, reject) => {
   // normalsMaterial
   uniforms_normals = {
     cspec:	{ type: "v3", value: new THREE.Vector3(0.04,0.04,0.04) },
-    //cdiff:	{ type: "v3", value: new THREE.Vector3(0.8,0.8,0.8) },
     cdiff:	{ type: "v3", value: new THREE.Vector3(0.5,0.5,0.5) },
     roughness: {type: "f", value: 0.2},
     normalMap:	{ type: "t", value: normalMap},
     normalScale: {type: "v2", value: new THREE.Vector2(1,1)},
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
+    envMap: { type: "t", value: cubeMapForesta },
     irradianceMap: { type: "t", value: irradianceForesta },
     //ambientLight:  { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) } // Luce bianca di intesita' 0.5
   };
@@ -138,6 +140,36 @@ var loaderPromise = new Promise((resolve, reject) => {
     fragmentShader: fs_normals,
     side : THREE.DoubleSide,
   });
+
+
+  // TEST MAPS
+  // testMaterial
+  uniforms_test = {
+    normalMap:	  { type: "t", value: normalMap },
+    diffuseMap:	  { type: "t", value: diffuseMap },
+    roughnessMap:	{ type: "t", value: roughnessMap },
+    metalnessMap:	{ type: "t", value: metalnessMap },
+    //aoMap: { type: "t", value: occlusionMap }, // TODO test
+    pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
+    clight:	{ type: "v3", value: new THREE.Vector3() },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
+    normalScale: {type: "v2", value: new THREE.Vector2(1,1)}, // TODO only used in EM and IEM
+    envMap: { type: "t", value: cubeMapForesta },
+    irradianceMap:  { type: "t", value: irradianceForesta },
+    //ambientLight: { type: "v3", value: new THREE.Vector3(2,2,2) } // Luce bianca di intesita' 2
+  };
+
+  testMaterial = new THREE.ShaderMaterial({
+    uniforms: uniforms_test,
+    vertexShader:   vs_test,
+    fragmentShader: fs_test,
+
+    //uniforms: uniforms_normals,
+    //vertexShader:   vs_normals,
+    //afragmentShader: fs_normals,
+    side : THREE.DoubleSide,
+  });
+
 
 
   // copperMaterial
@@ -279,6 +311,7 @@ var loaderPromise = new Promise((resolve, reject) => {
   uniforms_leather1.pointLightPosition.value =
   uniforms_fur     .pointLightPosition.value =
   uniforms_normals.pointLightPosition.value =
+  uniforms_test.pointLightPosition.value =
     new THREE.Vector3(
       lightMesh.position.x,
       lightMesh.position.y,
@@ -294,6 +327,7 @@ var loaderPromise = new Promise((resolve, reject) => {
   uniforms_leather1.clight.value =
   uniforms_fur     .clight.value =
   uniforms_normals.clight.value =
+  uniforms_test.clight.value =
     new THREE.Vector3(
       lightParameters.red   * lightParameters.intensity,
       lightParameters.green * lightParameters.intensity,
@@ -480,7 +514,8 @@ function updateUniforms() {
     uniforms_leather0 != undefined &&
     uniforms_leather1 != undefined &&
     uniforms_fur      != undefined &&
-    uniforms_normals  != undefined
+    uniforms_normals  != undefined &&
+    uniforms_test     != undefined
   ) {
     uniforms_texture .clight.value =
       uniforms_gold    .clight.value =
@@ -491,6 +526,7 @@ function updateUniforms() {
       uniforms_leather1.clight.value =
       uniforms_fur     .clight.value =
       uniforms_normals .clight.value =
+      uniforms_test    .clight.value =
       new THREE.Vector3(
         lightParameters.red   * lightParameters.intensity,
         lightParameters.green * lightParameters.intensity,
