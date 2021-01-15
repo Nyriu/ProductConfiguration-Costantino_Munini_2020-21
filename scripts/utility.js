@@ -63,7 +63,7 @@ function loadTexture(file) {
 function loadCubeMap(path) {
 	// load cube map for background
 	var loader = new THREE.CubeTextureLoader();
-	loader.setPath( 'models/textures/cubemaps/' + path + '/' );
+	loader.setPath( 'cubemaps/' + path + '/' );
 
 	var textureCube = loader.load([
     'posx.jpg', 'negx.jpg',
