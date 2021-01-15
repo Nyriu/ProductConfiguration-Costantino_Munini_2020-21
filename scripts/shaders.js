@@ -327,3 +327,167 @@ void main() {
   //gl_FragColor = vec4(r,1.0);
 }
 `
+
+// ------- DIELECTRICS WITH AO------- //
+const vs_dielectric_ao =
+`
+precision highp float;
+precision highp int;
+attribute vec4 tangent;
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vPosition;
+varying vec2 vUv;
+
+void main() {
+  vec4 vPos = modelViewMatrix * vec4( position, 1.0 );
+  vPosition = vPos.xyz;
+  vNormal = normalize(normalMatrix * normal);
+  vec3 objectTangent = vec3( tangent.xyz );
+  vec3 transformedTangent = normalMatrix * objectTangent;
+  vTangent = normalize( transformedTangent );
+  // w is 1 or -1 depending on the sign of det( M tangent )
+  vBitangent = normalize( cross( vNormal, vTangent ) * (-tangent.w) );
+  vUv = uv;
+  gl_Position = projectionMatrix * vPos;
+}
+`
+
+const fs_dielectric_ao =
+`
+precision highp float;
+precision highp int;
+varying vec3 vNormal;
+varying vec3 vTangent;
+varying vec3 vBitangent;
+varying vec3 vPosition;
+varying vec2 vUv;
+uniform vec3 pointLightPosition; // in world space
+uniform vec3 ambientLight;
+uniform vec3 clight;
+uniform sampler2D normalMap;
+uniform sampler2D diffuseMap;
+uniform samplerCube envMap;
+uniform samplerCube irradianceMap;
+uniform vec2 normalScale;
+uniform sampler2D roughnessMap;
+uniform vec2 textureRepeat;
+
+uniform sampler2D aoMap;
+
+const float PI = 3.14159;
+#define saturate(a) clamp( a, 0.0, 1.0 )
+vec3 cdiff;
+vec3 cspec;
+float roughness;
+
+float pow2( const in float x ) { return x*x; }
+
+float getSpecularMIPLevel( const in float roughness, const in float maxMIPLevel ) {
+
+  float maxMIPLevelScalar = maxMIPLevel;
+
+  float sigma = PI * roughness * roughness / ( 1.0 + roughness );
+  float desiredMIPLevel = maxMIPLevelScalar + log2( sigma );
+
+  // clamp to allowable LOD ranges.
+  return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );
+
+}
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+  return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+}
+
+vec3 BRDF_Specular_GGX_Environment( const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float roughness ) {
+
+  float dotNV = saturate( dot( normal, viewDir ) );
+
+  const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
+
+  const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
+
+  vec4 r = roughness * c0 + c1;
+
+  float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
+
+  vec2 brdf = vec2( -1.04, 1.04 ) * a004 + r.zw;
+
+  return specularColor * brdf.x + brdf.y;
+}
+
+vec3 FSchlick(float vDoth, vec3 f0) {
+  return f0 + (vec3(1.0)-f0)*pow(1.0 - vDoth,5.0);
+}
+
+float DGGX(float NoH, float alpha) {
+  float alpha2 = alpha * alpha;
+  float k = NoH*NoH * (alpha2 - 1.0) + 1.0;
+  return alpha2 / (PI * k * k );
+}
+
+float G1(float nDotv, float alpha) {
+  float alpha2 = alpha*alpha;
+  return 2.0 * (nDotv / (nDotv + sqrt(alpha2 + (1.0-alpha2)*nDotv*nDotv )));
+}
+
+float GSmith(float nDotv, float nDotl, float alpha) {
+  return G1(nDotl,alpha)*G1(nDotv,alpha);
+}
+
+void main() {
+  vec4 lPosition = viewMatrix * vec4( pointLightPosition, 1.0 );
+  vec3 l = normalize(lPosition.xyz - vPosition.xyz);
+  vec3 normal = normalize( vNormal );
+  vec3 tangent = normalize( vTangent );
+  vec3 bitangent = normalize( vBitangent );
+  mat3 vTBN = mat3( tangent, bitangent, normal );
+  vec3 mapN = texture2D( normalMap, vUv*textureRepeat ).xyz * 2.0 - 1.0;
+  //mapN.xy = normalScale * mapN.xy;
+  vec3 n = normalize( vTBN * mapN );
+  vec3 v = normalize( -vPosition);
+  vec3 vReflect = reflect(vPosition,n);
+  vec3 r = inverseTransformDirection( vReflect, viewMatrix );
+  vec3 worldN = inverseTransformDirection( n, viewMatrix );
+  vec3 h = normalize( v + l);
+  // small quantity to prevent divisions by 0
+  float nDotl = max(dot( n, l ),0.000001);
+  float lDoth = max(dot( l, h ),0.000001);
+  float nDoth = max(dot( n, h ),0.000001);
+  float vDoth = max(dot( v, h ),0.000001);
+  float nDotv = max(dot( n, v ),0.000001);
+
+  cdiff = texture2D( diffuseMap, vUv*textureRepeat ).rgb;
+  cdiff = pow( cdiff, vec3(2.2)); // texture in sRGB, linearize
+
+  cspec = vec3(0.04);
+  roughness = texture2D( roughnessMap, vUv*textureRepeat).r; // no need to linearize roughness map
+
+  float alpha = roughness * roughness;
+  
+  float specularMIPLevel = getSpecularMIPLevel(alpha, 8.0);
+  vec3 fresnel = FSchlick(vDoth, cspec);
+
+  vec3 irradiance = textureCube(irradianceMap, worldN).rgb;
+  irradiance = pow( irradiance, vec3(2.2));
+  vec3 envLight = textureCubeLodEXT( envMap, vec3(-r.x, r.yz), specularMIPLevel ).rgb;
+  // texture in sRGB, linearize
+  envLight = pow( envLight, vec3(2.2));
+  vec3 BRDF = (vec3(1.0)-fresnel)*cdiff/PI + fresnel*GSmith(nDotv,nDotl, alpha)*DGGX(nDoth,alpha)/
+    (4.0*nDotl*nDotv);
+
+  vec3 outRadiance =
+    cdiff * irradiance + // IEM
+    envLight * BRDF_Specular_GGX_Environment(n, v, cspec, alpha) + // EM
+    PI * clight * nDotl * BRDF // pointLight
+    + ambientLight*cdiff
+    ;
+
+  outRadiance = outRadiance * texture2D( aoMap, vUv*textureRepeat).r;
+
+  // gamma encode the final value
+  gl_FragColor = vec4(pow( outRadiance, vec3(1.0/2.2)), 1.0);
+  //gl_FragColor = vec4(r,1.0);
+}
+`

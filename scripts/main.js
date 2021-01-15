@@ -117,6 +117,7 @@ var loaderPromise = new Promise((resolve, reject) => {
   fur_normalMap    = loadTexture("materials/fur/rlsu3wp_2K_Normal.jpg");
   fur_diffuseMap   = loadTexture("materials/fur/rlsu3wp_2K_Albedo.jpg");
   fur_roughnessMap = loadTexture("materials/fur/rlsu3wp_2K_Roughness.jpg");
+  fur_aoMap        = loadTexture("materials/fur/rlsu3wp_2K_AO.jpg");
   fur_diffuseMap.encoding = THREE.sRGBEncoding;
 
   resolve(true);
@@ -304,6 +305,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalMap:	  { type: "t", value: fur_normalMap },
     diffuseMap:	  { type: "t", value: fur_diffuseMap },
     roughnessMap:	{ type: "t", value: fur_roughnessMap },
+    aoMap:	      { type: "t", value: fur_aoMap },
     textureRepeat: { type: "v2", value: new THREE.Vector2(9.5,9.5) },
     // TODO sarebbe da aggiungere rotazione?
 
@@ -317,8 +319,8 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   furMaterial = new THREE.ShaderMaterial({
     uniforms: uniforms_fur,
-    vertexShader:   vs_dielectric,
-    fragmentShader: fs_dielectric,
+    vertexShader:   vs_dielectric_ao,
+    fragmentShader: fs_dielectric_ao,
     side : THREE.DoubleSide,
   });
 
@@ -372,6 +374,27 @@ var stats = new Stats();
 function init() {
 
   renderer.setClearColor( 0xf0f0f0 );
+
+  // // TODO VALUTARE AGGIUNGERE OMBRE
+  // renderer.shadowMap.enabled = true; // enable shadow mapping
+  // renderer.shadowMap.type = THREE.PCFShadowMap; // choose shadow filtering, other values
+  // // // are THREE.BasicShadowMap, and
+  // // //THREE.PCFSoftShadowMap;
+  // // ...
+  // //   // set shadow casting on lights, with parameters
+  // // spotLight.castShadow = true;
+  // // spotLight.shadow.camera.near = 8;
+  // // spotLight.shadow.camera.far = 30;
+  // // spotLight.shadow.mapSize.width = 1024; // shadow map resolution
+  // // spotLight.shadow.mapSize.height = 1024;
+  // // spotLight.shadow.bias = 0.0001;
+  // // // set shadow casting / receiving on objects
+  // // torusKnot.castShadow = true;
+  // // torusKnot.receiveShadow = true;
+  // // ground.castShadow = false;
+  // // ground.receiveShadow = true;
+
+
 
   //Coordinates.drawAllAxes();
 
