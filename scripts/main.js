@@ -383,9 +383,9 @@ function init() {
   
   scene.add(lightMesh);
 
-  document.getElementById("model").appendChild( renderer.domElement );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth / 4, window.innerHeight / 4 );
+  document.getElementById("model").appendChild(renderer.domElement);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.8);
 
   controls.addEventListener( 'change', render );
   controls.minDistance = 3;
@@ -401,8 +401,7 @@ function init() {
 
   stats.domElement.style.position = 'absolute';
   stats.domElement.style.top = '0px';
-  document.body.appendChild( stats.domElement );
-
+  // document.body.appendChild(stats.domElement);
 }
 
 function onResize() {
@@ -410,6 +409,7 @@ function onResize() {
   camera.aspect = ( window.innerWidth / window.innerHeight );
   camera.updateProjectionMatrix();
 
+  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.8);
 }
 
 function update() {
@@ -429,7 +429,7 @@ function clearGui() {
 	gui.open();
 }
 
-
+// TODO REMOVE ?
 function buildGui() {
 
 	clearGui();
@@ -504,9 +504,6 @@ var uvRepeat = {
   "uv_repeat" : 1.0,
 }
 
-
-
-
 function updateUniforms() {
   if (
     uniforms_texture  != undefined &&
@@ -535,9 +532,7 @@ function updateUniforms() {
 }
 
 init();
-//buildGui();
+//buildGui(); TODO REMOVE ?
 
 update();
 render();
-
-

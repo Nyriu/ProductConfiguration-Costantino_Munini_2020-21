@@ -48,7 +48,7 @@ var lightParameters = {
 
 
 // MATERIALs STUFF
-materials_loaded = false; // true iff all materials have been loaded // TODO really needed?
+materials_loaded = true; // true iff all materials have been loaded // TODO really needed?
 
 
 var uniforms_texture; // default
