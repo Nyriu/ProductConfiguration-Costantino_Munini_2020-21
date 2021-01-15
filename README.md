@@ -14,7 +14,7 @@ Il configuratore rende disponibili 4 ambienti diversi in cui poter osservare l'e
 La luce principale è data da una luce puntuale che illumina il modello dall'alto, la luce ambientale è data da una luce ambientale costante e da la luce provenente dall'ambiente selezionato.
 
 ### File usati
-* il modello con texture [Viking Berserk Helmet free model](https://skfb.ly/6RLLA To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/)
+* il modello con texture [Viking Berserk Helmet free model](http://creativecommons.org/licenses/by/4.0/)
 * le texture dei materiali [Megascans](https://quixel.com/megascans/home?search=brass&assetId=se4nbarc)
 * le cubemap [humus](https://www.humus.name/index.php?page=Textures&start=56)
 
@@ -31,14 +31,27 @@ Il progetto è strutturato nel seguente modo:
 * la catella *libs* raggruppa tutte le librerie e dipendenze;
 * la catella *models* contiene il modello dell'elmo e relative texture;
 * la catella *cubemaps* contiene tutte le EM ed IEM usate nel configuratore;
-* la catella *iamges* contiene figure, loghi ed immagini usate nella pagine html del configuratore.
-
-
+* la catella *images* contiene figure, loghi ed immagini usate nella pagine html del configuratore.
 
 
 ## Processo di sviluppo
-In un primo momento ci siamo concentrati sulla creazione del modello della barca, usando la classe voxelWorld risparmiando sulla generazione delle facce all'interno della barca. Poi abbiamo sviluppato una versione non ottimizzata del mare di dimensione massima 64x64. Successivamente abbiamo fatto qualche prova con telecamera e texture fino a trovare un risultato soddisfacente.
-In ultimo, abbiamo ottimizzato il mare calcolando il suo movimento all'interno del vertex shader e abbiamo aggiunto l'avanzamento della barca.
+* Ricerca del modello e suo corretto caricamento in mesh differenti;
+* Creazione di semplici shader per utilizzare le texture fornite ed una luce puntuale;
+* Creazione di una semplice interfaccia;
+* Ricerca ed utilizzo di materiali differenti con possibilità di selezionarli per mesh;
+* Ricerca ed utilizzo di EnvMap negli shader e generazione di mappe pre-filtrate;
+* Correzione e rifinimento degli shader;
+* Correzione luci;
+* Valutazione operazioni di post-processing (blur, );
+* Integrazione finale con interfaccia.
 
-## Problematiche
-Il problema principale è stato quello di rendere l'applicazione GPU-bound piuttosto che CPU-bound, spostando quindi il lavoro computazionale all'interno degli shader. Abbiamo avuto problematiche minori riguardo al movimento coerente dei remi, dato che volevamo usare la stessa mesh per entrambe le file dei remi.
+
+## Risultato finale
+* TODO 3 img
+* variare tipo visiera, pelli e bkg
+<!-- TODO img/gif -->
+<!-- ![Animazione barca](VoxelBoat.gif) -->
+<!-- ![Animazione barca](VoxelBoat.gif) -->
+<!-- ![Animazione barca](VoxelBoat.gif) -->
+
+
