@@ -1,5 +1,8 @@
 <html>
   <head>
+    <title>Costantino - Munini Configurator</title>
+    <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;800&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +17,7 @@
       }
       html {
         box-sizing: border-box;
-        font-size: 62.5%; /* 1rem = 10px, 10px/16px = 62.5% */
+        font-size: 62.5%;
         scroll-behavior: smooth;
       }
       body {
@@ -91,9 +94,8 @@
       }
       .down {
         display: flex;
-        height: 50rem;
         margin-top: 5rem;
-        margin-bottom: 5rem;
+        margin-bottom: 12rem;
       }
       .down #model {
         flex-grow: 0.6;
@@ -110,7 +112,7 @@
       .down .pannello ul {
         list-style-type: none;
         font-size: 1.5rem;
-        margin-top: 1.5rem;
+        margin: 1.5rem 0;
       }
       .down .pannello ul li {
         display: flex;
@@ -146,7 +148,7 @@
         padding: 1rem;
       }
       .pannello h2 {
-        padding-top: 5rem;
+        padding-top: 3rem;
       }
       p {
         padding: 1rem;
@@ -227,9 +229,21 @@
           <h2>Personalizzazione</h2>
           <ul>
             <li>
-              Visiera
+              Visiera superiore
               <div class="select" style="width:200px;">
-                <select id="casco">
+                <select id="visiera-superiore">
+                  <option value="default">Default</option>
+                  <option value="gold">Oro</option>
+                  <option value="copper">Rame</option>
+                  <option value="brass">Ottone</option>
+                  <option value="bronze">Bronzo</option>
+                </select>
+              </div>
+            </li>
+            <li>
+              Visiera inferiore
+              <div class="select" style="width:200px;">
+                <select id="visiera-inferiore">
                   <option value="default">Default</option>
                   <option value="gold">Oro</option>
                   <option value="copper">Rame</option>
@@ -250,6 +264,17 @@
               </div>
             </li>
             <li>
+              Paranuca
+              <div class="select" style="width:200px;">
+                <select id="paranuca">
+                  <option value="default">Default</option>
+                  <option value="leather0">Cuoio 1</option>
+                  <option value="leather1">Cuoio 2</option>
+                  <option value="fur">Pelliccia</option>
+                </select>
+              </div>
+            </li>
+            <li>
               Ambiente
               <div class="select" style="width:200px;">
                 <select id="ambiente">
@@ -260,20 +285,31 @@
                 </select>
               </div>
             </li>
+            <li>
+              Mostra paranuca
+              <input type="checkbox" id="myCheck" onclick="myFunction()" checked>
+            </li>
+            <li>
+              Mostra guanciali
+              <input type="checkbox" id="myCheck2" onclick="myFunction2()" checked>
+            </li>
           </ul>
         </div>
       </div>
     </main>
     <script>
-      var materialeCasco = document.getElementById("casco");
-      materialeCasco.addEventListener("change", function() {
+      var materialeVisieraSuperiore = document.getElementById("visiera-superiore");
+      materialeVisieraSuperiore.addEventListener("change", function() {
         changeComponentMaterial(
           helmet_components_names.VISOR_UPPER,
-          materialeCasco.value
+          materialeVisieraSuperiore.value
         )
+      });
+      var materialeVisieraInferiore = document.getElementById("visiera-inferiore");
+      materialeVisieraInferiore.addEventListener("change", function() {
         changeComponentMaterial(
           helmet_components_names.VISOR_LOWER,
-          materialeCasco.value
+          materialeVisieraInferiore.value
         )
       });
       var materialeGuanciali = document.getElementById("guanciali");
@@ -286,15 +322,36 @@
           helmet_components_names.CHEEK_PAD_RIGHT,
           materialeGuanciali.value
         )
+      });
+      var materialeParanuca = document.getElementById("paranuca");
+      materialeParanuca.addEventListener("change", function() {
         changeComponentMaterial(
           helmet_components_names.NECK_ROLL,
-          materialeGuanciali.value
+          materialeParanuca.value
         )
       });
       var ambiente = document.getElementById("ambiente");
       ambiente.addEventListener("change", function() {
         changeEnvironment(ambiente.value);
       });
+      function myFunction () {
+        var checkBox = document.getElementById("myCheck");
+
+        if (checkBox.checked == true) {
+          showLeather(true);
+        } else {
+          showLeather(false);
+        }
+      }
+      function myFunction2 () {
+        var checkBox = document.getElementById("myCheck2");
+
+        if (checkBox.checked == true) {
+          showCheekPads(true);
+        } else {
+          showCheekPads(false);
+        }
+      }
     </script>
   </body>
 </html>

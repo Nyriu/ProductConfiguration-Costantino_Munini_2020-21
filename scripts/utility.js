@@ -1,6 +1,4 @@
 function loadModel() {
-  console.log("loading helmet");
-
   var loader = new THREE.GLTFLoader();
   var local_geometry, local_material, local_mesh;
   var helmet = new THREE.Object3D();

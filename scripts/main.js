@@ -432,7 +432,7 @@ function onResize() {
   camera.aspect = ( window.innerWidth / window.innerHeight );
   camera.updateProjectionMatrix();
 
-  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.8);
+  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.6);
 }
 
 function update() {
