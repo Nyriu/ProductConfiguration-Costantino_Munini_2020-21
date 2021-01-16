@@ -1,5 +1,6 @@
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.outputEncoding = THREE.sRGBEncoding;
+var composer = new THREE.EffectComposer( renderer );
 
 var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -425,6 +426,48 @@ function init() {
   stats.domElement.style.position = 'absolute';
   stats.domElement.style.top = '0px';
   // document.body.appendChild(stats.domElement);
+
+  const canvas = document.getElementById("model").children[2];
+  const pixelRatio = renderer.getPixelRatio();
+  // TODO UPDATE OFFSETS on resize!
+
+  // Post Proc //
+  composer.addPass( new THREE.RenderPass( scene, camera ) );
+
+  //const effectGrayScale = new THREE.ShaderPass( LuminosityShader );
+  //composer.addPass( effectGrayScale );
+
+  //effectSobel = new THREE.ShaderPass( SobelOperatorShader );
+  //effectSobel.uniforms[ 'resolution' ].value.x = canvas.offsetWidth  * pixelRatio;
+  //effectSobel.uniforms[ 'resolution' ].value.y = canvas.offsetHeight * pixelRatio;
+  //// TODO UPDATE OFFSETS on resize!
+  //composer.addPass( effectSobel );
+
+  //const dotsShader = new THREE.ShaderPass( DotScreenShader );
+  //dotsShader.uniforms[ 'tSize' ].value = new THREE.Vector2 ( canvas.offsetWidth, canvas.offsetHeight);
+  //dotsShader.uniforms[ 'scale' ].value = 100;
+  //composer.addPass( dotsShader );
+  
+  
+  effectToon = new THREE.ShaderPass( ToonShader );
+  effectToon.uniforms[ 'resolution' ].value.x = canvas.offsetWidth  * pixelRatio;
+  effectToon.uniforms[ 'resolution' ].value.y = canvas.offsetHeight * pixelRatio;
+  // TODO UPDATE OFFSETS on resize!
+  composer.addPass( effectToon ); // TODO WIP
+
+  fxaaPass = new THREE.ShaderPass( FXAAShader );
+  // TODO UPDATE OFFSETS on resize!
+  // cfr riga 142
+  // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_fxaa.html
+  fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( canvas.offsetWidth * pixelRatio );
+  fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( canvas.offsetHeight * pixelRatio );
+  composer.setSize ( canvas.offsetWidth, canvas.offsetHeight );
+  composer.addPass( fxaaPass );
+
+  //passthrough = new THREE.ShaderPass( THREE.GammaCorrectionShader);
+  //passthrough.renderToScreen = true;
+  //composer.addPass( passthrough );
+
 }
 
 function onResize() {
@@ -442,8 +485,8 @@ function update() {
 
 function render() {
   updateUniforms();
-  renderer.render( scene, camera );
-
+  //renderer.render( scene, camera );
+  composer.render();
 }
 
 function clearGui() {
