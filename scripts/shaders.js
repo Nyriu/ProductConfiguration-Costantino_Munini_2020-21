@@ -747,6 +747,8 @@ var ToonShader = {
 
 	fragmentShader: [
 
+		'#include <common>', // to use linearToRelativeLuminance
+
 		'uniform sampler2D tDiffuse;',
 		'uniform vec2 resolution;',
 		'varying vec2 vUv;',
@@ -754,6 +756,9 @@ var ToonShader = {
 		'void main() {',
 
 		'	vec2 texel = vec2( 1.0 / resolution.x, 1.0 / resolution.y );',
+
+		//'	vec4 texel = texture2D( tDiffuse, vUv );',
+		//'	float l = linearToRelativeLuminance( texel.rgb );',
 
 		// kernel definition (in glsl matrices are filled in column-major order)
 
@@ -764,21 +769,21 @@ var ToonShader = {
 
 		// first column
 
-		'	float tx0y0 = texture2D( tDiffuse, vUv + texel * vec2( -1, -1 ) ).r;',
-		'	float tx0y1 = texture2D( tDiffuse, vUv + texel * vec2( -1,  0 ) ).r;',
-		'	float tx0y2 = texture2D( tDiffuse, vUv + texel * vec2( -1,  1 ) ).r;',
+		'	float tx0y0 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2( -1, -1 ) ).rgb );',
+		'	float tx0y1 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2( -1,  0 ) ).rgb );',
+		'	float tx0y2 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2( -1,  1 ) ).rgb );',
 
 		// second column
 
-		'	float tx1y0 = texture2D( tDiffuse, vUv + texel * vec2(  0, -1 ) ).r;',
-		'	float tx1y1 = texture2D( tDiffuse, vUv + texel * vec2(  0,  0 ) ).r;',
-		'	float tx1y2 = texture2D( tDiffuse, vUv + texel * vec2(  0,  1 ) ).r;',
+		'	float tx1y0 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2(  0, -1 ) ).rgb );',
+		'	float tx1y1 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2(  0,  0 ) ).rgb );',
+		'	float tx1y2 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2(  0,  1 ) ).rgb );',
 
 		// third column
 
-		'	float tx2y0 = texture2D( tDiffuse, vUv + texel * vec2(  1, -1 ) ).r;',
-		'	float tx2y1 = texture2D( tDiffuse, vUv + texel * vec2(  1,  0 ) ).r;',
-		'	float tx2y2 = texture2D( tDiffuse, vUv + texel * vec2(  1,  1 ) ).r;',
+		'	float tx2y0 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2(  1, -1 ) ).rgb );',
+		'	float tx2y1 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2(  1,  0 ) ).rgb );',
+		'	float tx2y2 = linearToRelativeLuminance( texture2D( tDiffuse, vUv + texel * vec2(  1,  1 ) ).rgb );',
 
 		// gradient value in x direction
 
@@ -800,7 +805,8 @@ var ToonShader = {
 
     ' vec3 fragColor = vec3( texture2D( tDiffuse, vUv + texel * vec2(  0,  0 ) ).rgb);',
 
-		'	gl_FragColor = vec4( fragColor * (1.0-G), 1 );', // TODO modify here
+		'	gl_FragColor = vec4( fragColor * (1.0-G), 1 );', // TODO modify here?
+		//'	gl_FragColor = vec4( vec3(1.0 - G), 1 );',
 
 		'}'
 

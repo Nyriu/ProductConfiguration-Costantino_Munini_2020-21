@@ -91,10 +91,10 @@ function showCheekPads(show=true, helmet=DEBUG_helmet) {
 function showLeather(show=true, helmet=DEBUG_helmet) {
   var comps = [
     helmet_components_names.NECK_ROLL,
-    helmet_components_names.CHEEK_PAD_LEFT,
-    helmet_components_names.CHEEK_PAD_RIGHT,
-    helmet_components_names.CONNECTOR_LEFT,
-    helmet_components_names.CONNECTOR_RIGHT
+    //helmet_components_names.CHEEK_PAD_LEFT,
+    //helmet_components_names.CHEEK_PAD_RIGHT,
+    //helmet_components_names.CONNECTOR_LEFT,
+    //helmet_components_names.CONNECTOR_RIGHT
   ];
 
   comps.forEach( c => {

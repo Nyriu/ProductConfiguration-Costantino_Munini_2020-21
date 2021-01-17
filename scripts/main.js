@@ -448,12 +448,12 @@ function init() {
   //dotsShader.uniforms[ 'scale' ].value = 100;
   //composer.addPass( dotsShader );
   
-  
   effectToon = new THREE.ShaderPass( ToonShader );
   effectToon.uniforms[ 'resolution' ].value.x = canvas.offsetWidth  * pixelRatio;
   effectToon.uniforms[ 'resolution' ].value.y = canvas.offsetHeight * pixelRatio;
   // TODO UPDATE OFFSETS on resize!
-  composer.addPass( effectToon ); // TODO WIP
+  composer.addPass( effectToon );
+  composer.addPass( effectToon ); // TODO one or two passes?
 
   fxaaPass = new THREE.ShaderPass( FXAAShader );
   // TODO UPDATE OFFSETS on resize!
