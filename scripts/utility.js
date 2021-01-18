@@ -71,7 +71,6 @@ function loadCubeMap(path) {
 	return textureCube;
 }
 
-
 // TODO fare in modo che il modello sia completamente pronto prima di eseguire questi
 function showCheekPads(show=true, helmet=DEBUG_helmet) {
   var comps = [
@@ -104,9 +103,6 @@ function showLeather(show=true, helmet=DEBUG_helmet) {
   render();
 }
 
-
-
-
 function update_name2mat() {
   mat_name2mat = {
     "default" : textureMaterial,
@@ -121,7 +117,6 @@ function update_name2mat() {
     "fur"     : furMaterial,
   };
 }
-
 
 function changeComponentMaterial(comp_name, mat_name) {
   if (!materials_loaded) {
@@ -140,7 +135,6 @@ function changeComponentMaterial(comp_name, mat_name) {
 
   render();
 };
-
 
 function changeEnvironment(env_name) {
   if (!materials_loaded) {
@@ -174,3 +168,67 @@ function changeEnvironment(env_name) {
   render();
 };
 
+// UI controls //
+var materialeVisieraSuperiore = document.getElementById("visiera-superiore");
+materialeVisieraSuperiore.addEventListener("change", function() {
+  changeComponentMaterial(
+    helmet_components_names.VISOR_UPPER,
+    materialeVisieraSuperiore.value
+  )
+});
+var materialeVisieraInferiore = document.getElementById("visiera-inferiore");
+materialeVisieraInferiore.addEventListener("change", function() {
+  changeComponentMaterial(
+    helmet_components_names.VISOR_LOWER,
+    materialeVisieraInferiore.value
+  )
+});
+var materialeGuanciali = document.getElementById("guanciali");
+materialeGuanciali.addEventListener("change", function() {
+  changeComponentMaterial(
+    helmet_components_names.CHEEK_PAD_LEFT,
+    materialeGuanciali.value
+  )
+  changeComponentMaterial(
+    helmet_components_names.CHEEK_PAD_RIGHT,
+    materialeGuanciali.value
+  )
+});
+var materialeParanuca = document.getElementById("paranuca");
+materialeParanuca.addEventListener("change", function() {
+  changeComponentMaterial(
+    helmet_components_names.NECK_ROLL,
+    materialeParanuca.value
+  )
+});
+var ambiente = document.getElementById("ambiente");
+ambiente.addEventListener("change", function() {
+  changeEnvironment(ambiente.value);
+});
+function myFunction () {
+  var checkBox = document.getElementById("myCheck");
+
+  if (checkBox.checked == true) {
+    showLeather(true);
+  } else {
+    showLeather(false);
+  }
+}
+function myFunction2 () {
+  var checkBox = document.getElementById("myCheck2");
+
+  if (checkBox.checked == true) {
+    showCheekPads(true);
+  } else {
+    showCheekPads(false);
+  }
+}
+function myFunction3 () {
+  var checkBox = document.getElementById("myCheck3");
+
+  if (checkBox.checked == true) {
+    addEffectToon();
+  } else {
+    removeEffectToon();
+  }
+}

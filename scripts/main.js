@@ -1,17 +1,19 @@
 var renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.outputEncoding = THREE.sRGBEncoding;
-var composer = new THREE.EffectComposer( renderer );
+var composer = new THREE.EffectComposer(renderer);
+var canvas;
+var pixelRatio;
 
-var camera   = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
-var controls = new THREE.OrbitControls( camera, renderer.domElement );
+var camera   = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
 var scene    = new THREE.Scene();
 
 var lightMesh = new THREE.Mesh(
-  new THREE.SphereGeometry( 1, 16, 16),
+  new THREE.SphereGeometry(1, 16, 16),
   new THREE.MeshBasicMaterial({
-    color: 0xffff00, wireframe:true
+    color: 0xffff00, wireframe: true
   }));
-lightMesh.position.set( 4.0, 4.0, 7.0 );
+lightMesh.position.set(4.0, 4.0, 7.0);
 lightMesh.visible = false;
 
 // EM //
@@ -362,56 +364,26 @@ var loaderPromise = new Promise((resolve, reject) => {
 
   // show canvas
   document.getElementById('loader').style.display = 'none';
-  document.getElementById('can').style.display = 'block';
-
   render();
 });
 
 
-// FUNCTIONs //
-var gui;
-var stats = new Stats();
-
+// FUNCTIONS //
 function init() {
-
   renderer.setClearColor( 0xf0f0f0 );
 
-  // // TODO VALUTARE AGGIUNGERE OMBRE
-  // renderer.shadowMap.enabled = true; // enable shadow mapping
-  // renderer.shadowMap.type = THREE.PCFShadowMap; // choose shadow filtering, other values
-  // // // are THREE.BasicShadowMap, and
-  // // //THREE.PCFSoftShadowMap;
-  // // ...
-  // //   // set shadow casting on lights, with parameters
-  // // spotLight.castShadow = true;
-  // // spotLight.shadow.camera.near = 8;
-  // // spotLight.shadow.camera.far = 30;
-  // // spotLight.shadow.mapSize.width = 1024; // shadow map resolution
-  // // spotLight.shadow.mapSize.height = 1024;
-  // // spotLight.shadow.bias = 0.0001;
-  // // // set shadow casting / receiving on objects
-  // // torusKnot.castShadow = true;
-  // // torusKnot.receiveShadow = true;
-  // // ground.castShadow = false;
-  // // ground.receiveShadow = true;
+  camera.position.set(3.0125698739296674, -0.24927753550987475, 5.726534689706049);
+  camera.rotation.set(0.04350279482356695, 0.4838971371052188, -0.020248918756045297);
 
-
-
-  //Coordinates.drawAllAxes();
-
-  //camera.position.set( 0, 10, 10 );
-  camera.position.set( 3.0125698739296674, -0.24927753550987475, 5.726534689706049 );
-  camera.rotation.set( 0.04350279482356695, 0.4838971371052188, -0.020248918756045297);
-
-  scene.add( camera );
+  scene.add(camera);
   
   scene.add(lightMesh);
 
   document.getElementById("model").appendChild(renderer.domElement);
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.8);
+  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.3);
 
-  controls.addEventListener( 'change', render );
+  controls.addEventListener('change', render);
   controls.minDistance = 3;
   controls.maxDistance = 10;
   controls.maxPolarAngle = 2;
@@ -420,153 +392,63 @@ function init() {
 
   controls.update();
 
-  window.addEventListener( 'resize', onResize, false );
+  window.addEventListener('resize', onResize, false);
 
-
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.top = '0px';
-  // document.body.appendChild(stats.domElement);
-
-  const canvas = document.getElementById("model").children[2];
-  const pixelRatio = renderer.getPixelRatio();
+  canvas = document.getElementById("model").children[1];
+  pixelRatio = renderer.getPixelRatio();
   // TODO UPDATE OFFSETS on resize!
 
   // Post Proc //
-  composer.addPass( new THREE.RenderPass( scene, camera ) );
+  composer.addPass(new THREE.RenderPass(scene, camera));
 
-  //const effectGrayScale = new THREE.ShaderPass( LuminosityShader );
-  //composer.addPass( effectGrayScale );
-
-  //effectSobel = new THREE.ShaderPass( SobelOperatorShader );
-  //effectSobel.uniforms[ 'resolution' ].value.x = canvas.offsetWidth  * pixelRatio;
-  //effectSobel.uniforms[ 'resolution' ].value.y = canvas.offsetHeight * pixelRatio;
-  //// TODO UPDATE OFFSETS on resize!
-  //composer.addPass( effectSobel );
-
-  //const dotsShader = new THREE.ShaderPass( DotScreenShader );
-  //dotsShader.uniforms[ 'tSize' ].value = new THREE.Vector2 ( canvas.offsetWidth, canvas.offsetHeight);
-  //dotsShader.uniforms[ 'scale' ].value = 100;
-  //composer.addPass( dotsShader );
-  
-  effectToon = new THREE.ShaderPass( ToonShader );
-  effectToon.uniforms[ 'resolution' ].value.x = canvas.offsetWidth  * pixelRatio;
-  effectToon.uniforms[ 'resolution' ].value.y = canvas.offsetHeight * pixelRatio;
-  // TODO UPDATE OFFSETS on resize!
-  composer.addPass( effectToon );
-  composer.addPass( effectToon ); // TODO one or two passes?
-
-  fxaaPass = new THREE.ShaderPass( FXAAShader );
+  fxaaPass = new THREE.ShaderPass(FXAAShader);
   // TODO UPDATE OFFSETS on resize!
   // cfr riga 142
   // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_fxaa.html
-  fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( canvas.offsetWidth * pixelRatio );
-  fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( canvas.offsetHeight * pixelRatio );
-  composer.setSize ( canvas.offsetWidth, canvas.offsetHeight );
-  composer.addPass( fxaaPass );
+  fxaaPass.material.uniforms['resolution'].value.x = 1 / (canvas.offsetWidth * pixelRatio);
+  fxaaPass.material.uniforms['resolution'].value.y = 1 / (canvas.offsetHeight * pixelRatio);
+  composer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+  composer.addPass(fxaaPass);
+}
 
-  //passthrough = new THREE.ShaderPass( THREE.GammaCorrectionShader);
-  //passthrough.renderToScreen = true;
-  //composer.addPass( passthrough );
+var effectToon;
+function addEffectToon() {
+  effectToon = new THREE.ShaderPass(ToonShader);
+  effectToon.uniforms['resolution'].value.x = canvas.offsetWidth  * pixelRatio;
+  effectToon.uniforms['resolution'].value.y = canvas.offsetHeight * pixelRatio;
+  // TODO UPDATE OFFSETS on resize!
+  composer.addPass(effectToon);
+  // composer.addPass(effectToon); // TODO one or two passes?
+  composer.render();
+}
 
+function removeEffectToon() {
+  composer.removePass(effectToon);
+  composer.render();
 }
 
 function onResize() {
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  camera.aspect = ( window.innerWidth / window.innerHeight );
+  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.3);
+  camera.aspect = (window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
-
-  renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.6);
 }
 
 function update() {
-  requestAnimationFrame( update );
-  stats.update();
+  requestAnimationFrame(update);
 }
 
 function render() {
   updateUniforms();
-  //renderer.render( scene, camera );
   composer.render();
 }
 
 function clearGui() {
-	if ( gui ) gui.destroy();
+	if (gui) gui.destroy();
 	gui = new dat.GUI();
 	gui.open();
 }
 
-// TODO REMOVE ?
-function buildGui() {
-
-	clearGui();
-	lightSettings = gui.addFolder('Light Parameters');
-	lightSettings.add(lightParameters,'red').min(0).max(1).onChange( function(newVal) { render() });
-	lightSettings.add(lightParameters,'green').min(0).max(1).onChange( function(newVal) { render() });
-	lightSettings.add(lightParameters,'blue').min(0).max(1).onChange( function(newVal) { render() });
-	lightSettings.add(lightParameters,'intensity').min(0).max(3).onChange( function(newVal) { render() });
-
-	environmentSettings = gui.addFolder('Environment Parameters');
-	environmentSettings.add(environmentParameters, 'env', env_list).name('Environment').listen()
-    .onChange( function(newVal) {
-      changeEnvironment(newVal);
-    });
-
-
-	helmetSettings = gui.addFolder('Helmet settings');
-  helmetSettings.add( helmetParameters_show, 'show_leather').name('Leather').listen()
-    .onChange( function(newVal) {
-      showLeather(newVal);
-      helmetParameters_show.show_cheekPads = newVal;
-    });
-  helmetSettings.add( helmetParameters_show, 'show_cheekPads').name('Cheek Pads').listen()
-    .onChange( function(newVal) {
-      showCheekPads(newVal);
-    });
-
-	materialSettings = gui.addFolder('Helmet Materials settings');
-  materialSettings.add(helmetParameters_materials,
-    'visor_upper_mat', metallic_materials_list )
-    .name('Upper Visor Material').listen()
-    .onChange(
-      newVal => {
-        changeComponentMaterial(
-          helmet_components_names.VISOR_UPPER,
-          newVal
-        )});
-  materialSettings.add(helmetParameters_materials,
-    'visor_lower_mat', metallic_materials_list )
-    .name('Lower Visor Material').listen()
-    .onChange(
-      newVal => {
-        changeComponentMaterial(
-          helmet_components_names.VISOR_LOWER,
-          newVal
-        )});
-  materialSettings.add(helmetParameters_materials,
-    'cheek_pads', dielectric_materials_list )
-    .name('Cheek Pads Material').listen()
-    .onChange(
-      newVal => {
-        changeComponentMaterial(
-          helmet_components_names.CHEEK_PAD_LEFT,
-          newVal);
-        changeComponentMaterial(
-          helmet_components_names.CHEEK_PAD_RIGHT,
-          newVal);
-      });
-  materialSettings.add(helmetParameters_materials,
-    'neck_roll', dielectric_materials_list )
-    .name('Neck Roll Material').listen()
-    .onChange(
-      newVal => {
-        changeComponentMaterial(
-          helmet_components_names.NECK_ROLL,
-          newVal);
-      });
-
-}
-
-var uvRepeat = { 
+var uvRepeat = { // Serve?
   "uv_repeat" : 1.0,
 }
 
@@ -598,7 +480,5 @@ function updateUniforms() {
 }
 
 init();
-//buildGui(); TODO REMOVE ?
-
 update();
 render();
