@@ -1,7 +1,6 @@
 # Visualizzatore Prodotto: Elmo Vichingo
 
-<!-- TODO img/gif -->
-<!-- ![Animazione barca](VoxelBoat.gif) -->
+![](images/default.png)
 
 ## Idea e obiettivi
 Creare un configuratore di un prodotto che permetta all'utente di visualizzare le possibili personalizzazioni.
@@ -49,9 +48,8 @@ Il progetto è strutturato nel seguente modo:
 ## Risultato finale
 * TODO 3 img
 * variare tipo visiera, pelli e bkg
-<!-- TODO img/gif -->
-<!-- ![Animazione barca](VoxelBoat.gif) -->
-<!-- ![Animazione barca](VoxelBoat.gif) -->
-<!-- ![Animazione barca](VoxelBoat.gif) -->
+![](images/metal.png)
+![](images/leather.png)
+![](images/filter.png)
 
 

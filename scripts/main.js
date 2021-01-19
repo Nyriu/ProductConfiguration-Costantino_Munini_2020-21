@@ -21,19 +21,11 @@ var cubeMapForesta = loadCubeMap("foresta");
 var cubeMapFiume = loadCubeMap("fiume");
 var cubeMapCascata = loadCubeMap("cascata");
 var cubeMapNeve = loadCubeMap("neve");
-cubeMapForesta.encoding = THREE.sRGBEncoding;
-cubeMapFiume.encoding = THREE.sRGBEncoding;
-cubeMapCascata.encoding = THREE.sRGBEncoding;
-cubeMapNeve.encoding = THREE.sRGBEncoding;
 
 var irradianceForesta = loadCubeMap("irradianceForesta");
 var irradianceFiume = loadCubeMap("irradianceFiume");
 var irradianceCascata = loadCubeMap("irradianceCascata");
 var irradianceNeve = loadCubeMap("irradianceNeve");
-irradianceForesta.encoding = THREE.sRGBEncoding;
-irradianceFiume.encoding = THREE.sRGBEncoding;
-irradianceCascata.encoding = THREE.sRGBEncoding;
-irradianceNeve.encoding = THREE.sRGBEncoding;
 
 scene.background = cubeMapNeve;
 
@@ -67,61 +59,50 @@ var loaderPromise = new Promise((resolve, reject) => {
   diffuseMap   = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
   roughnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Roughness.png");
   metalnessMap = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Metallic.png");
-  //occlusionMap = loadTexture("models/textures/internal_ground_ao_texture.jpeg");
   normalMap   .flipY = false;
   diffuseMap  .flipY = false;
   roughnessMap.flipY = false;
   metalnessMap.flipY = false;
-  // TODO provare a flippare la occlusion
-  // non cambia nulla perche' forse bisogna usare UV diversi
-  diffuseMap.encoding = THREE.sRGBEncoding;
 
   // COPPER MAPS
   copper_normalMap    = loadTexture("materials/copper/cross_brushed_copper_normal.png");
   copper_diffuseMap   = loadTexture("materials/copper/cross_brushed_copper_basecolor.png");
   copper_roughnessMap = loadTexture("materials/copper/cross_brushed_copper_roughness.png");
   copper_metalnessMap = loadTexture("materials/copper/cross_brushed_copper_metallic.png");
-  copper_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // BRASS MAPS
   brass_normalMap    = loadTexture("../materials/brass/se4nbarc_4K_Normal.jpg ");
   brass_diffuseMap   = loadTexture("../materials/brass/se4nbarc_4K_Albedo.jpg ");
   brass_roughnessMap = loadTexture("../materials/brass/se4nbarc_4K_Roughness.jpg ");
   brass_metalnessMap = loadTexture("../materials/brass/se4nbarc_4K_Metalness.jpg ");
-  brass_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // BRONZE MAPS
   bronze_normalMap    = loadTexture("../materials/bronze/se4pcbbc_4K_Normal.jpg ");
   bronze_diffuseMap   = loadTexture("../materials/bronze/se4pcbbc_4K_Albedo.jpg ");
   bronze_roughnessMap = loadTexture("../materials/bronze/se4pcbbc_4K_Roughness.jpg ");
   bronze_metalnessMap = loadTexture("../materials/bronze/se4pcbbc_4K_Metalness.jpg ");
-  bronze_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // LEATHERs MAPS
   // 0
   leather0_normalMap    = loadTexture("materials/leather0/leather_bull_Normal.png");
   leather0_diffuseMap   = loadTexture("materials/leather0/leather_bull_Base_Color.png");
   leather0_roughnessMap = loadTexture("materials/leather0/leather_bull_Roughness.png");
-  leather0_diffuseMap.encoding = THREE.sRGBEncoding;
   // 1
   leather1_normalMap    = loadTexture("materials/leather1/oizt3np_2K_Normal.jpg");
   leather1_diffuseMap   = loadTexture("materials/leather1/oizt3np_2K_Albedo.jpg");
   leather1_roughnessMap = loadTexture("materials/leather1/oizt3np_2K_Roughness.jpg");
-  leather1_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // GOLD MAPS
   gold_normalMap    = loadTexture("materials/gold/schvfgwp_2K_Normal.jpg");
   gold_diffuseMap   = loadTexture("materials/gold/schvfgwp_2K_Albedo.jpg");
   gold_roughnessMap = loadTexture("materials/gold/schvfgwp_2K_Roughness.jpg");
   gold_metalnessMap = loadTexture("materials/gold/schvfgwp_2K_Metalness.jpg");
-  gold_diffuseMap.encoding = THREE.sRGBEncoding;
 
   // FUR MAPS
   fur_normalMap    = loadTexture("materials/fur/rlsu3wp_2K_Normal.jpg");
   fur_diffuseMap   = loadTexture("materials/fur/rlsu3wp_2K_Albedo.jpg");
   fur_roughnessMap = loadTexture("materials/fur/rlsu3wp_2K_Roughness.jpg");
   fur_aoMap        = loadTexture("materials/fur/rlsu3wp_2K_AO.jpg");
-  fur_diffuseMap.encoding = THREE.sRGBEncoding;
 
   resolve(true);
 })
@@ -134,9 +115,8 @@ var loaderPromise = new Promise((resolve, reject) => {
     diffuseMap:	  { type: "t", value: diffuseMap },
     roughnessMap:	{ type: "t", value: roughnessMap },
     metalnessMap:	{ type: "t", value: metalnessMap },
-    //aoMap: { type: "t", value: occlusionMap },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(1,1) },
-    normalScale: { type: "v2", value: new THREE.Vector2(1,1) }, // TODO only used in EM and IEM
+    textureRepeat: { type: "v2", value: new THREE.Vector2(1, 1) },
+    normalScale: { type: "v2", value: new THREE.Vector2(1, 1) }, // TODO only used in EM and IEM
     invertTangentW: { value: 1.0 }, // put 1 only when using helmet normalMaps, 0 otherwise
 
     // Lights
@@ -144,7 +124,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapNeve },
     irradianceMap:  { type: "t", value: irradianceNeve },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   textureMaterial = new THREE.ShaderMaterial({
@@ -169,7 +149,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapNeve },
     irradianceMap:  { type: "t", value: irradianceNeve },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   copperMaterial = new THREE.ShaderMaterial({
@@ -195,7 +175,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapNeve },
     irradianceMap:  { type: "t", value: irradianceNeve },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   brassMaterial = new THREE.ShaderMaterial({
@@ -220,7 +200,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapNeve },
     irradianceMap:  { type: "t", value: irradianceNeve },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   bronzeMaterial = new THREE.ShaderMaterial({
@@ -238,14 +218,14 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalMap:	  { type: "t", value: leather0_normalMap },
     diffuseMap:	  { type: "t", value: leather0_diffuseMap },
     roughnessMap:	{ type: "t", value: leather0_roughnessMap },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(6.6,6.6) },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(6.6, 6.6) },
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   leather0Material = new THREE.ShaderMaterial({
@@ -260,14 +240,14 @@ var loaderPromise = new Promise((resolve, reject) => {
     normalMap:	  { type: "t", value: leather1_normalMap },
     diffuseMap:	  { type: "t", value: leather1_diffuseMap },
     roughnessMap:	{ type: "t", value: leather1_roughnessMap },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(7.6,7.6) },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(7.6, 7.6) },
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   leather1Material = new THREE.ShaderMaterial({
@@ -285,14 +265,14 @@ var loaderPromise = new Promise((resolve, reject) => {
     diffuseMap:	  { type: "t", value: gold_diffuseMap },
     roughnessMap:	{ type: "t", value: gold_roughnessMap },
     metalnessMap:	{ type: "t", value: gold_metalnessMap },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(8,8) },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(8, 8) },
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapNeve },
     irradianceMap:  { type: "t", value: irradianceNeve },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   goldMaterial = new THREE.ShaderMaterial({
@@ -309,7 +289,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     diffuseMap:	  { type: "t", value: fur_diffuseMap },
     roughnessMap:	{ type: "t", value: fur_roughnessMap },
     aoMap:	      { type: "t", value: fur_aoMap },
-    textureRepeat: { type: "v2", value: new THREE.Vector2(9.5,9.5) },
+    textureRepeat: { type: "v2", value: new THREE.Vector2(9.5, 9.5) },
     // TODO sarebbe da aggiungere rotazione?
 
     // Lights
@@ -317,7 +297,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     clight:	{ type: "v3", value: new THREE.Vector3() },
     envMap: { type: "t", value: cubeMapForesta },
     irradianceMap:  { type: "t", value: irradianceForesta },
-    ambientLight: { type: "v3", value: new THREE.Vector3(0.1, 0.1, 0.1) },
+    ambientLight: { type: "v3", value: ambientLightPam },
   };
 
   furMaterial = new THREE.ShaderMaterial({

@@ -45,6 +45,8 @@ var lightParameters = {
   intensity: 1.0,
 }
 
+var ambientLightPam = new THREE.Vector3(0.2, 0.2, 0.2);
+
 
 
 // MATERIALs STUFF
