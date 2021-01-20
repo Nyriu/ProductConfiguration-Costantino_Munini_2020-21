@@ -50,7 +50,7 @@ var ambientLightPam = new THREE.Vector3(0.2, 0.2, 0.2);
 
 
 // MATERIALs STUFF
-materials_loaded = true; // true iff all materials have been loaded // TODO really needed?
+materials_loaded = true; // true iff all materials have been loaded
 
 
 var uniforms_texture; // default

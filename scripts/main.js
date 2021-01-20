@@ -52,8 +52,6 @@ var env_name2env = {
 
 var loaderPromise = new Promise((resolve, reject) => {
   // here we loads all the textures
-  // TODO split in different loaders?
-
   // DEFAULT HELMET MAPS
   normalMap    = loadTexture("models/textures/T_VikingBerserk_UpperArmor_Normal.png");
   diffuseMap   = loadTexture("models/textures/T_VikingBerserk_UpperArmor_BaseColor.png");
@@ -116,7 +114,7 @@ var loaderPromise = new Promise((resolve, reject) => {
     roughnessMap:	{ type: "t", value: roughnessMap },
     metalnessMap:	{ type: "t", value: metalnessMap },
     textureRepeat: { type: "v2", value: new THREE.Vector2(1, 1) },
-    normalScale: { type: "v2", value: new THREE.Vector2(1, 1) }, // TODO only used in EM and IEM
+    normalScale: { type: "v2", value: new THREE.Vector2(1, 1) },
     invertTangentW: { value: 1.0 }, // put 1 only when using helmet normalMaps, 0 otherwise
 
     // Lights
@@ -290,7 +288,6 @@ var loaderPromise = new Promise((resolve, reject) => {
     roughnessMap:	{ type: "t", value: fur_roughnessMap },
     aoMap:	      { type: "t", value: fur_aoMap },
     textureRepeat: { type: "v2", value: new THREE.Vector2(9.5, 9.5) },
-    // TODO sarebbe da aggiungere rotazione?
 
     // Lights
     pointLightPosition:	{ type: "v3", value: new THREE.Vector3() },
@@ -376,29 +373,23 @@ function init() {
 
   canvas = document.getElementById("model").children[1];
   pixelRatio = renderer.getPixelRatio();
-  // TODO UPDATE OFFSETS on resize!
-
   // Post Proc //
   composer.addPass(new THREE.RenderPass(scene, camera));
 
   fxaaPass = new THREE.ShaderPass(FXAAShader);
-  // TODO UPDATE OFFSETS on resize!
-  // cfr riga 142
-  // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_fxaa.html
   fxaaPass.material.uniforms['resolution'].value.x = 1 / (canvas.offsetWidth * pixelRatio);
   fxaaPass.material.uniforms['resolution'].value.y = 1 / (canvas.offsetHeight * pixelRatio);
   composer.setSize(canvas.offsetWidth, canvas.offsetHeight);
   composer.addPass(fxaaPass);
-}
 
-var effectToon;
-function addEffectToon() {
   effectToon = new THREE.ShaderPass(ToonShader);
   effectToon.uniforms['resolution'].value.x = canvas.offsetWidth  * pixelRatio;
   effectToon.uniforms['resolution'].value.y = canvas.offsetHeight * pixelRatio;
-  // TODO UPDATE OFFSETS on resize!
+}
+
+//var effectToon;
+function addEffectToon() {
   composer.addPass(effectToon);
-  // composer.addPass(effectToon); // TODO one or two passes?
   composer.render();
 }
 
@@ -411,6 +402,14 @@ function onResize() {
   renderer.setSize(window.innerWidth / 2, window.innerHeight / 1.3);
   camera.aspect = (window.innerWidth / window.innerHeight);
   camera.updateProjectionMatrix();
+
+  fxaaPass.material.uniforms['resolution'].value.x = 1 / (canvas.offsetWidth * pixelRatio);
+  fxaaPass.material.uniforms['resolution'].value.y = 1 / (canvas.offsetHeight * pixelRatio);
+  composer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+
+  effectToon.uniforms['resolution'].value.x = canvas.offsetWidth  * pixelRatio;
+  effectToon.uniforms['resolution'].value.y = canvas.offsetHeight * pixelRatio;
+
 }
 
 function update() {

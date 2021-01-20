@@ -17,8 +17,6 @@ function loadModel() {
       model.scene.traverse(
         function (child) {
           if (child.type == "Mesh" || child.type == "SkinnedMesh") {
-            DEBUG_child = child; // TODO REMOVE
-
             local_geometry = child.geometry;
             local_material = textureMaterial;
 
@@ -30,16 +28,12 @@ function loadModel() {
             local_mesh.name = helmet_ids2components[mesh_num];
             local_mesh.scale.multiplyScalar(8);
 
-            DEBUG_mesh = local_mesh; // TODO REMOVE
-
             helmet.add(local_mesh);
             mesh_num++;
           }
         }
       );
-
-      DEBUG_helmet = helmet; // TODO REMOVE
-      helmet.position.set(0,-14,0); // TODO centrare in Maya
+      helmet.position.set(0,-14,0);
       scene.add(helmet);
     }
   );
@@ -71,8 +65,7 @@ function loadCubeMap(path) {
 	return textureCube;
 }
 
-// TODO fare in modo che il modello sia completamente pronto prima di eseguire questi
-function showCheekPads(show=true, helmet=DEBUG_helmet) {
+function showCheekPads(show=true, helmet) {
   var comps = [
     helmet_components_names.CHEEK_PAD_LEFT,
     helmet_components_names.CHEEK_PAD_RIGHT,
@@ -87,7 +80,7 @@ function showCheekPads(show=true, helmet=DEBUG_helmet) {
   render();
 }
 
-function showLeather(show=true, helmet=DEBUG_helmet) {
+function showLeather(show=true, helmet) {
   var comps = [
     helmet_components_names.NECK_ROLL,
     //helmet_components_names.CHEEK_PAD_LEFT,
@@ -208,19 +201,27 @@ ambiente.addEventListener("change", function() {
 function myFunction () {
   var checkBox = document.getElementById("myCheck");
 
+  if (helmet == undefined) {
+    return;
+  }
+
   if (checkBox.checked == true) {
-    showLeather(true);
+    showLeather(true, helmet);
   } else {
-    showLeather(false);
+    showLeather(false, helmet);
   }
 }
 function myFunction2 () {
   var checkBox = document.getElementById("myCheck2");
 
+  if (helmet == undefined) {
+    return;
+  }
+
   if (checkBox.checked == true) {
-    showCheekPads(true);
+    showCheekPads(true, helmet);
   } else {
-    showCheekPads(false);
+    showCheekPads(false, helmet);
   }
 }
 function myFunction3 () {
