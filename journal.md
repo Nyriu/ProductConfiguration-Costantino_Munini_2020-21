@@ -25,8 +25,6 @@
 ## 06/01
 * Materiali differenti per mesh
 * Aggiunto semplice gui per modificare modello (solo show/hide di mesh al momento)
-* TODO pulizia
-* TODO fix riflesso interno calotta
 
 ## 07/01
 * creati vari materiali
@@ -43,3 +41,9 @@
 ## 14/01
 * Correzione errori in shaders
 * Integrazione con UI
+
+
+## 15/01
+* Aggiunti shader di post processing:
+  * Sobel Toon Shader
+  * FXAA

@@ -26,11 +26,11 @@ Il progetto è strutturato nel seguente modo:
   * *main.js* contiene la logica principale, effettua i caricamenti delle texture ed istanzia i materiali con le relative uniform;
   * *utity.js* contiene alcune funzioni di supporto come il corretto caricamento del modello oppure funzioni per modificarne le parti;
   * *shaders.js* contiene delle variabili di tipo stringa in cui sono definiti gli shader usati nel progetto;
-* la catella *materials* contiene le texture di tutti i materiali usati, organizzati in sottocartetlle; 
-* la catella *libs* raggruppa tutte le librerie e dipendenze;
-* la catella *models* contiene il modello dell'elmo e relative texture;
-* la catella *cubemaps* contiene tutte le EM ed IEM usate nel configuratore;
-* la catella *images* contiene figure, loghi ed immagini usate nella pagine html del configuratore.
+* la cartella *materials* contiene le texture di tutti i materiali usati, organizzati in sottocartetlle; 
+* la cartella *libs* raggruppa tutte le librerie e dipendenze;
+* la cartella *models* contiene il modello dell'elmo e relative texture;
+* la cartella *cubemaps* contiene tutte le EM ed IEM usate nel configuratore;
+* la cartella *images* contiene figure, loghi ed immagini usate nella pagine html del configuratore.
 
 
 ## Processo di sviluppo
@@ -41,13 +41,11 @@ Il progetto è strutturato nel seguente modo:
 * Ricerca ed utilizzo di EnvMap negli shader e generazione di mappe pre-filtrate;
 * Correzione e rifinimento degli shader;
 * Correzione luci;
-* Valutazione operazioni di post-processing (blur, );
+* Valutazione operazioni di post-processing (FXAA, SobelOperator);
 * Integrazione finale con interfaccia.
 
 
 ## Risultato finale
-* TODO 3 img
-* variare tipo visiera, pelli e bkg
 ![](images/metal.png)
 ![](images/leather.png)
 ![](images/filter.png)
